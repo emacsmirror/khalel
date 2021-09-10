@@ -9,7 +9,7 @@
 ;; Version: 0.0.1
 ;; Keywords: event, calendar, ics, khal
 ;; Homepage: https://gitlab.com/hperrey/khalel
-;; Package-Requires: ((emacs 27.1) (cl-lib "0.5") (org 9.5) (ox-icalendar))
+;; Package-Requires: ((emacs 27.1) (cl-lib "0.5") (org 9.5))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -46,7 +46,6 @@
 ;;;; Requirements
 
 (require 'org)
-(require 'ox-icalendar)
 
 ;;;; Customization
 
