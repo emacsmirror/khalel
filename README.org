@@ -114,7 +114,12 @@ You might want to customize the values for default calendar, capture file and im
 (setq khalel-capture-org-file (concat org-directory "new_events.org"))
 #+end_src
 
-In my setup, the =new_events.org= file is mostly a temporary file as it is not part of my org-agenda. =calendar.org=, on the other hand, is. There the new events will end up in after the next sync.
+In my setup, the =new_events.org= file is mostly a temporary file as it is not part of my org-agenda. =calendar.org=, on the other hand, is in my list of agenda files. There the new events will end up in after the next sync.
+
+*Warning*: =calendar.org= is being overwritten on each import to avoid collecting duplicates inside the file! The confirmation prompt for overwriting the file can be disabled via:
+#+begin_src emacs-lisp
+(setq khalel-import-org-file-confirm-overwrite nil)
+#+end_src
 
 And I never plan too long into the future, so the next three months will be more than enough to fill my agenda view:
 #+begin_src emacs-lisp

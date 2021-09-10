@@ -59,7 +59,15 @@
 (defcustom khalel-import-org-file (concat org-directory "calendar.org")
   "The file to import khal calendar entries into.
 
-CAUTION: the file will be overwritten with each import!"
+CAUTION: the file will be overwritten with each import! The
+prompt for overwriting the file can be disabled by setting
+`khalel-import-org-file-confirm-overwrite' to nil."
+  :group 'khalel
+  :type 'string)
+
+(defcustom khalel-import-org-file-confirm-overwrite 't
+  "When nil, always overwrite the org file into which events are imported.
+Otherwise, ask for confirmation."
   :group 'khalel
   :type 'string)
 
@@ -98,7 +106,7 @@ description: {description}\ncalendar: {calendar}\n"
           "--day-format" "" "today" khalel-import-time-delta)
           (save-excursion
             (with-current-buffer dst
-              (write-file khalel-import-org-file 't)
+              (write-file khalel-import-org-file khalel-import-org-file-confirm-overwrite)
               (message (format "Imported %d future events from khal into %s"
                                (length (org-map-entries nil nil nil))
                                khalel-import-org-file))))
