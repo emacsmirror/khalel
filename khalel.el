@@ -179,21 +179,18 @@ for details of the supported fields."
           (plist-get import :exit-status)
           (plist-get import :output)))))))
 
-(defun khalel-add-capture-template (&optional file key)
-  "Add an `org-capture' template with KEY for creating new events in FILE.
+(defun khalel-add-capture-template (&optional capturefn key)
+  "Add an `org-capture' template with KEY for creating new events in CAPTUREFN.
 If arguments are nil then `khalel-capture-key' and
 `khalel-capture-org-file' will be used instead. New events will
 be immediately exported to khal. The key used for the capture
 template can be configured via `khalel-capture-key'."
-  (eval-after-load 'org
+  (with-eval-after-load 'org
     (add-to-list 'org-capture-templates
-        (quote (
-                ((or key khalel-capture-key) "calendar event"
-                 entry
-                 (file (or file khalel-capture-org-file))
-                 "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n:CREATED:
-%U\n:CALENDAR: \n:CATEGORIES: event\n:LOCATION:
-unknown\n:APPT_WARNTIME: 10\n:END:\n" )))))
+                 `(,(or key khalel-capture-key) "calendar event"
+                   entry
+                   (file ,(or capturefn khalel-capture-org-file))
+                   "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n:CREATED: %U\n:CALENDAR: \n:CATEGORIES: event\n:LOCATION: unknown\n:APPT_WARNTIME: 10\n:END:\n" )))
   (add-hook 'org-capture-before-finalize-hook
             'khalel--capture-finalize-calendar-export))
 
