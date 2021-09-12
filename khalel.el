@@ -174,8 +174,10 @@ for details of the supported fields."
          (path (file-name-directory
                 (buffer-file-name
                  (buffer-base-buffer))))
-         (calendar (or (org-entry-get nil "calendar")
-                       khalel-default-calendar))
+         (entriescal (org-entry-get nil "calendar"))
+         (calendar (or
+                    (when (string-match "[^[:blank:]]" entriescal) entriescal)
+                    khalel-default-calendar))
          ;; export to ics
          (ics
           (org-icalendar-export-to-ics nil nil 't)
