@@ -54,12 +54,18 @@
   :group 'Calendar)
 
 (defcustom khalel-khal-command "~/.local/bin/khal"
-  "The command to run when executing khal. When set to nil then it will be guessed."
+  "The command to run when executing khal.
+
+When set to nil then it will be guessed."
   :group 'khalel
   :type 'string)
 
 (defcustom khalel-default-calendar "privat"
-  "The khal calendar to import into by default. The calendar for a new event can be modified during the capture process."
+  "The khal calendar to import into by default.
+
+The calendar for a new event can be modified during the capture
+process. Set to nil to use the default calendar configured for
+khal instead."
   :group 'khalel
   :type 'string)
 
@@ -112,9 +118,10 @@ on. Khal only supports certain (basic) fields. This is
 particularly important when you consider to edit and export an
 event back to khal: some fields might be discarded!
 
-Examples of such fields are timezone information, categories, organizer,
-URL (which will become part of the description instead), alarms (which
-will be replaced with a default value configurable via `khalel-default-alarm')."
+Examples of such fields are timezone information, categories,
+organizer, URL (which will become part of the description
+instead), alarms (which will be replaced with a default value
+configurable via `khalel-default-alarm')."
   (interactive)
   (let
     ( ;; call khal directly.
