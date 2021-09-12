@@ -5,7 +5,21 @@
 =khal= allows to access calendars stored in =.ics= files and provides means of
 listing existing events as well as to create new ones.
 
-Adjusting the output of =khal=, one can get something that already resembles an
+/Please note/: This code is in an early state. Especially should you want to
+edit existing events through =khalel=, you risk losing some of the information
+stored e.g. in custom fields that are not handled at the moment by either
+=khalel=, =khal= or org-mode's =.ics= exporter. Make tests for your needs on a
+non-production setup first!
+
+* Why =khal= and =khalel=
+=khal= is a simple and fast way to read, create and edit calendar entries. It
+does, however, have a limited feature set. If you need to deal with shared
+calendars and want to edit events, this might not be the right tool. If you have
+a simple calendar for your own needs /or/ just want to see calendar events pop
+up in the Emacs agenda, then read ahead. Also check out =khal='s [[https://khal.readthedocs.io/en/latest/index.html#features][features and
+limitations in its online documentation]] and the list of limitations below.
+
+Adjusting the output of =khal=, one can easily get something that already resembles an
 org-mode file (link to the online documentation: [[https://khal.readthedocs.io/en/latest/usage.html][khal usuage]]):
 
 #+begin_src bash :results output
@@ -58,7 +72,9 @@ through =khalel= require an additional import step to be visible in org-mode.
 #+RESULTS:
 [[file:sync_scheme.png]]
 
-Advantages:
+** Features and limitations
+
+Advantages with the approach:
 - integrates neatly into my work-flow
 - easy to customize
 - local stores can easily be backed up
@@ -67,6 +83,12 @@ Advantages:
 Disadvantages:
 - several manual steps to update if not automatized
 - more initial set-up work
+- currently, many features of =.ics=/CalDAV are not supported:
+  - no timezones
+  - no organizers/invitees
+  - ...
+- worse, should you import, edit and then export events, you might lose information connected with events!
+- code in early state, use at own risk!
 
 Besides calendars, this setup can be extended to contacts using:
 - [[https://github.com/pimutils/vdirsyncer][vdirsyncer]] (again) to mirror contacts from CardDAV server locally,

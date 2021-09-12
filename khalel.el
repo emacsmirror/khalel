@@ -63,6 +63,11 @@
   :group 'khalel
   :type 'string)
 
+(defcustom khalel-default-alarm "10"
+  "The default alarm before events to use for new events."
+  :group 'khalel
+  :type 'string)
+
 (defcustom khalel-capture-key "e"
   "The key to use when registering an `org-capture' template via `khalel-add-capture-template'."
   :group 'khalel
@@ -104,7 +109,17 @@ The time delta which determines how far into the future events
 are imported is configured through `khalel-import-time-delta'.
 CAUTION: The results are imported into the file
 `khalel-import-org-file' which is overwritten to avoid adding
-duplicate entires already imported previously."
+duplicate entires already imported previously.
+
+Please note that the resulting org file does not necessarily
+include all information contained in the .ics files it is based
+on. Khal only supports certain (basic) fields. This is
+particularly important when you consider to edit and export an
+event back to khal: some fields might be discarded!
+
+Examples of such fields are timezone information, categories, organizer,
+URL (which will become part of the description instead), alarms (which
+will be replaced with a default value configurable via `khalel-default-alarm')."
   (interactive)
   (let
     ( ;; call khal directly.
@@ -112,18 +127,29 @@ duplicate entires already imported previously."
         (executable-find "khal")))
       (dst (generate-new-buffer "khalel-output")))
           (call-process khal-bin nil dst nil "list" "--format"
-          "* {title} {cancelled}\n<{start-date} \
-{start-time}-{end-time}>\nlocation: {location}\n\
-description: {description}\ncalendar: {calendar}\n"
+          (format "* {title} {cancelled}\n\
+SCHEDULED: <{start-date} {start-time}-{end-time}>\n\
+:PROPERTIES:\n:CALENDAR: {calendar}\n\
+:LOCATION: {location}\n\
+:ID: {uid}\n\
+:APPT_WARNTIME: %s\n:END:\n {description}\n{url}\n{organizer}" khalel-default-alarm)
           "--day-format" "" "today" khalel-import-time-delta)
           (save-excursion
             (with-current-buffer dst
+              ;; remove any prefix added to the UID by org-icalendar-export-to-ics
+              ;; so that we can edit and re-export events without creating duplicates
+              (goto-char (point-min))
+              (while (re-search-forward "^\\(:ID:[[:blank:]]*\\)DL-\\|SC-\\|TS[[:digit:]]+-" nil t)
+                (replace-match "\\1" nil nil))
+              ;; cosmetic fix for all-day events w/o end time
+              (goto-char (point-min))
+              (while (re-search-forward "^\\(SCHEDULED:.*?\\) ->" nil t)
+                (replace-match "\\1>" nil nil))
               (write-file khalel-import-org-file khalel-import-org-file-confirm-overwrite)
               (message (format "Imported %d future events from khal into %s"
                                (length (org-map-entries nil nil nil))
                                khalel-import-org-file))))
-          (kill-buffer dst)
-          ))
+          (kill-buffer dst)))
 
 
 (defun khalel-export-org-subtree-to-calendar ()
@@ -190,7 +216,9 @@ template can be configured via `khalel-capture-key'."
                  `(,(or key khalel-capture-key) "calendar event"
                    entry
                    (file ,(or capturefn khalel-capture-org-file))
-                   "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n:CREATED: %U\n:CALENDAR: \n:CATEGORIES: event\n:LOCATION: unknown\n:APPT_WARNTIME: 10\n:END:\n" )))
+                   ,(concat "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n:CREATED: %U\n:CALENDAR: \n\
+:CATEGORY: event\n:LOCATION: unknown\n\
+:APPT_WARNTIME: " khalel-default-alarm "\n:END:\n" ))))
   (add-hook 'org-capture-before-finalize-hook
             'khalel--capture-finalize-calendar-export))
 
