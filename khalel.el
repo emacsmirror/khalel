@@ -88,11 +88,6 @@ Otherwise, ask for confirmation."
   :group 'khalel
   :type 'string)
 
-(defcustom khalel-capture-org-file (concat org-directory "new_events.org")
-  "The file to capture new calendar entries into and from which to export to ics."
-  :group 'khalel
-  :type 'string)
-
 (defcustom khalel-import-time-delta "30d"
   "How many hours, days, or months in the future to consider when import.
 Used as DELTA argument to the khal date range."
@@ -199,23 +194,27 @@ for details of the supported fields."
           (/= 0 (plist-get import :exit-status))
         (message
          (format
-          "%s failed importing %s and exited with status %d: %s"
+          "%s failed importing %s into calendar '%s' and exited with status %d: %s"
           khal-bin
           ics
+          calendar
           (plist-get import :exit-status)
           (plist-get import :output)))))))
 
-(defun khalel-add-capture-template (&optional capturefn key)
-  "Add an `org-capture' template with KEY for creating new events in CAPTUREFN.
-If arguments are nil then `khalel-capture-key' and
-`khalel-capture-org-file' will be used instead. New events will
-be immediately exported to khal. The key used for the capture
-template can be configured via `khalel-capture-key'."
+(defun khalel--make-temp-file ()
+  "Create and visit a temporary file for capturing and exporting events."
+  (find-file (make-temp-file "khalel-capture" nil ".org")))
+
+(defun khalel-add-capture-template (&optional key)
+  "Add an `org-capture' template with KEY for creating new events.
+If argument is nil then `khalel-capture-key' will be used as
+default instead. New events will be captured in a temporary file
+and immediately exported to khal."
   (with-eval-after-load 'org
     (add-to-list 'org-capture-templates
                  `(,(or key khalel-capture-key) "calendar event"
                    entry
-                   (file ,(or capturefn khalel-capture-org-file))
+                   (function khalel--make-temp-file)
                    ,(concat "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n:CREATED: %U\n:CALENDAR: \n\
 :CATEGORY: event\n:LOCATION: unknown\n\
 :APPT_WARNTIME: " khalel-default-alarm "\n:END:\n" ))))
