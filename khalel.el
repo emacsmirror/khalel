@@ -100,6 +100,13 @@ Used as DELTA argument to the khal date range."
   :group 'khalel
   :type 'string)
 
+(defcustom khalel-vdirsyncer-command "vdirsyncer"
+  "The command to run when executing vdirsyncer.
+
+When set to nil then it will be guessed."
+  :group 'khalel
+  :type 'string)
+
 
 ;;;; Commands
 
@@ -238,6 +245,29 @@ and immediately exported to khal."
   (add-hook 'org-capture-before-finalize-hook
             'khalel--capture-finalize-calendar-export))
 
+
+(defun khalel-run-vdirsyncer ()
+  "Run vdirsyncer process to synchronize local calendar entries."
+  (interactive)
+  (let ((buf "*VDIRSYNCER-OUTPUT-BUFFER*"))
+    (with-output-to-temp-buffer buf
+        (khalel--make-temp-window buf 16)
+        (set-process-sentinel
+         (start-process
+          "khalel-vdirsyncer-process"
+          buf
+          (or khalel-vdirsyncer-command
+              (executable-find "vdirsyncer"))
+          "sync")
+         'khalel--delete-process-window-when-done)
+        ;; show output
+        (sit-for 1)
+        (with-current-buffer buf
+          (set-window-point
+           (get-buffer-window (current-buffer) 'visible)
+           (point-min)))
+      )))
+
 ;;;; Functions
 (defun khalel--capture-finalize-calendar-export ()
   "Exports current event capture.
@@ -247,6 +277,28 @@ To be added as hook to `org-capture-before-finalize-hook'."
     (when (and (not org-note-abort) (equal key khalel-capture-key))
       (khalel-export-org-subtree-to-calendar))))
 
+(defun khalel--make-temp-window (buf height)
+  "Create a temporary window with HEIGHT at the bottom of the frame to display buffer BUF."
+  (let ((win
+         (split-window
+          (frame-root-window)
+          (- (window-height (frame-root-window)) height))))
+    (set-window-buffer win buf)
+    (set-window-dedicated-p win t)
+    win))
+
+(defun khalel--delete-process-window-when-done (process event)
+  "Check status of PROCESS at each EVENT and delete window after process finished."
+  (let ((buf (process-buffer process)))
+    (when (= 0 (process-exit-status process))
+      (when (get-buffer buf)
+        (with-current-buffer buf
+          (set-window-point
+           (get-buffer-window (current-buffer) 'visible)
+           (point-max)))
+        (sit-for 2)
+        (delete-window (get-buffer-window buf))
+        (kill-buffer buf)))))
 ;;;; Footer
 (provide 'khalel)
 ;;; khalel.el ends here
