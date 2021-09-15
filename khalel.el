@@ -145,8 +145,6 @@ SCHEDULED: <{start-date} {start-time}-{end-time}>\n\
                   "--day-format" "" "today" khalel-import-time-delta)
     (save-excursion
       (with-current-buffer dst
-        ;; remove any prefix added to the UID by org-icalendar-export-to-ics
-        ;; so that we can edit and re-export events without creating duplicates
         (goto-char (point-min))
         (insert "#+TITLE khalel imported calendar events
 
@@ -156,8 +154,6 @@ SCHEDULED: <{start-date} {start-time}-{end-time}>\n\
 calling =khalel-import-upcoming-events= next time.
 
 Consider adding this file to your list of agenda files so that events show up there.\n\n")
-        (while (re-search-forward "^\\(:ID:[[:blank:]]*\\)DL-\\|SC-\\|TS[[:digit:]]+-" nil t)
-          (replace-match "\\1" nil nil))
         ;; cosmetic fix for all-day events w/o end time
         (goto-char (point-min))
         (while (re-search-forward "^\\(SCHEDULED:.*?\\) ->" nil t)
@@ -195,8 +191,7 @@ for details of the supported fields."
                     khalel-default-calendar))
          ;; export to ics
          (ics
-          (org-icalendar-export-to-ics nil nil 't)
-          )
+          (khalel--sanitize-ics (org-icalendar-export-to-ics nil nil 't)))
          ;; call khal import
          (import
           (with-temp-buffer
@@ -225,9 +220,6 @@ for details of the supported fields."
           (plist-get import :exit-status)
           (plist-get import :output)))))))
 
-(defun khalel--make-temp-file ()
-  "Create and visit a temporary file for capturing and exporting events."
-  (find-file (make-temp-file "khalel-capture" nil ".org")))
 
 (defun khalel-add-capture-template (&optional key)
   "Add an `org-capture' template with KEY for creating new events.
@@ -269,13 +261,42 @@ and immediately exported to khal."
       )))
 
 ;;;; Functions
+(defun khalel--make-temp-file ()
+  "Create and visit a temporary file for capturing and exporting events."
+  (find-file (make-temp-file "khalel-capture" nil ".org")))
+
 (defun khalel--capture-finalize-calendar-export ()
-  "Exports current event capture.
+  "Export current event capture.
 To be added as hook to `org-capture-before-finalize-hook'."
   (let ((key  (plist-get org-capture-plist :key))
         (desc (plist-get org-capture-plist :description)))
     (when (and (not org-note-abort) (equal key khalel-capture-key))
       (khalel-export-org-subtree-to-calendar))))
+
+(defun khalel--sanitize-ics (ics)
+  "Remove modifications to data in ICS file.
+
+When exporting, `org-icalendar-export-to-ics' changes an entry's
+ID and summary depending on the type of date (deadline, scheduled
+or active/inactive timestamp) was discovered.
+
+While this ensures unique UIDs when multiple dates exist in an
+org entry, this is undesired when e.g. modifying events imported
+through khal. For scheduled events as created by
+`khalel-import-upcoming-events', these modifications are
+therefore removed."
+  (with-temp-file ics
+    (insert-file-contents ics)
+    ;; remove any prefix added to the UID by org-icalendar-export-to-ics
+    ;; so that we can edit and re-export events without creating duplicates
+    (goto-char (point-min))
+    (while (re-search-forward "^\\(UID:[[:blank:]]*\\)SC-" nil t)
+      (replace-match "\\1" nil nil))
+    (goto-char (point-min))
+    ;; remove prefix to summary for scheduled events
+    (while (re-search-forward "^\\(SUMMARY:[[:blank:]]*\\)S: " nil t)
+      (replace-match "\\1" nil nil)))
+  ics)
 
 (defun khalel--make-temp-window (buf height)
   "Create a temporary window with HEIGHT at the bottom of the frame to display buffer BUF."
@@ -299,6 +320,7 @@ To be added as hook to `org-capture-before-finalize-hook'."
         (sit-for 2)
         (delete-window (get-buffer-window buf))
         (kill-buffer buf)))))
+
 ;;;; Footer
 (provide 'khalel)
 ;;; khalel.el ends here
