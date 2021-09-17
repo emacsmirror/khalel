@@ -304,8 +304,8 @@ Works on imported events and used their ID to search for the
   correct event to modify."
   (interactive)
   (let* ((buf (get-buffer-create "*khal-edit*"))
-         (uid (org-entry-get nil "id"))
-         (win (khalel--make-temp-window buf 16)))
+         (uid (org-entry-get nil "id")))
+    (khalel--make-temp-window buf 16)
     (if (and uid (string-match "[^[:blank:]]" uid))
         (progn
           (set-process-sentinel
@@ -322,8 +322,7 @@ Works on imported events and used their ID to search for the
 (defun khalel--capture-finalize-calendar-export ()
   "Export current event capture.
 To be added as hook to `org-capture-before-finalize-hook'."
-  (let ((key  (plist-get org-capture-plist :key))
-        (desc (plist-get org-capture-plist :description)))
+  (let ((key  (plist-get org-capture-plist :key)))
     (when (and (not org-note-abort) (equal key khalel-capture-key))
       (khalel-export-org-subtree-to-calendar))))
 
@@ -355,7 +354,7 @@ here where appropriate for our use case."
         (set-window-dedicated-p win t)
         win)))
 
-(defun khalel--delete-process-window-when-done (process event)
+(defun khalel--delete-process-window-when-done (process _event)
   "Check status of PROCESS at each EVENT and delete window after process finished."
   (let ((buf (process-buffer process)))
     (when (= 0 (process-exit-status process))
