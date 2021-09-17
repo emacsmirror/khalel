@@ -1,25 +1,31 @@
 #+TITLE: khalel
 
-=khalel=: Interacting through Emacs with locally-stored calendars via the console application =khal=.
+=khalel=: Interacting through Emacs with locally-stored calendars via the
+console application =khal= and syncing with remote CalDAV calendars using
+=vdirsyncer=.
 
-=khal= allows to access calendars stored in =.ics= files and provides means of
-listing existing events as well as to create new ones.
+=khalel= allows to access calendars stored in =.ics= files and provides means of
+listing existing events, edit them as well as to create new ones largely through
+an org-mode interface.
 
-/Please note/: This code is in an early state. Especially should you want to
-edit existing events through =khalel=, you risk losing some of the information
-stored e.g. in custom fields that are not handled at the moment by either
-=khalel=, =khal= or org-mode's =.ics= exporter. Make tests for your needs on a
-non-production setup first!
+/Please note/: This code is in an early state. =khalel= shares limitations of
+=khal= especially when it comes to calendar entry fields that are not handled at
+the moment by either =khalel=, =khal= or org-mode's =.ics= exporter. Simple
+scheduling of events works fine but do not expect features found in more complex
+PIM applications such as invitees or even time zone support.
+
+On the other hand, it is all text files, so hack away! :)
 
 * Why =khal= and =khalel=
 =khal= is a simple and fast way to read, create and edit calendar entries. It
-does, however, have a limited feature set. If you need to deal with shared
-calendars and want to edit events, this might not be the right tool. If you have
-a simple calendar for your own needs /or/ just want to see calendar events pop
-up in the Emacs agenda, then read ahead. Also check out =khal='s [[https://khal.readthedocs.io/en/latest/index.html#features][features and
-limitations in its online documentation]] and the list of limitations below.
+does, however, have a limited feature set. If you need to deal with many shared
+calendars and want to edit events with invited participants, this might not be
+the right tool. If you have a simple CalDAV calendar for your own needs /or/
+just want to see calendar events pop up in the org-mode agenda in Emacs, then
+read ahead. Also check out =khal='s [[https://khal.readthedocs.io/en/latest/index.html#features][features and limitations in its online
+documentation]] and the additional list of limitations below.
 
-Adjusting the output of =khal=, one can easily get something that already resembles an
+Adjusting the output of =khal=, one can quite easily get something that already resembles an
 org-mode file (link to the online documentation: [[https://khal.readthedocs.io/en/latest/usage.html][khal usuage]]):
 
 #+begin_src bash :results output
@@ -36,18 +42,19 @@ khal list --format "* {title} \n <{start-date} {start-time}-{end-time}> \n {loca
 
 This is showing the events in the coming 10 days from now. This gives us
 something to work with and means we don't have to touch the =.ics= files
-directly.
+directly. =khalel= takes this a step further and imports a configurable range of
+events into a nicely-formated org-mode file.
 
-=khalel= provides a wrapper around =khal= and =org-mode= export functionality to
-import upcoming events into an org-mode file or to create new events via
-org-mode capture templates.
+Furthermore, =khalel= provides a wrapper around =khal= and =org-mode= export
+functionality to create new events via org-mode capture templates. Even editing
+existing events is possible through a console-interface to =khal=.
 
 * Use case
 
-I sync my remote calendars using [[https://github.com/pimutils/vdirsyncer][vdirsyncer]] which mirrors all events from my
-CalDAV servers locally. This calendar store can be accessed through =khal= and
-=khalel=. I am mostly interested in seeing upcoming events in the org-mode
-agenda and to quickly create new events with the familiar org-capture mechanism.
+I sync my remote CalDAV calendars using [[https://github.com/pimutils/vdirsyncer][vdirsyncer]] which mirrors all events from
+my locally. This calendar store can be accessed through =khal= and =khalel=. I
+am mostly interested in seeing upcoming events in the org-mode agenda and to
+quickly create new events with the familiar org-capture mechanism.
 
 This requires a small chain of steps: most notably, in my setup, events created
 through =khalel= require an additional import step to be visible in org-mode.
@@ -72,22 +79,26 @@ through =khalel= require an additional import step to be visible in org-mode.
 #+RESULTS:
 [[file:sync_scheme.png]]
 
+Of course, the synchronization and update of the imported org-file can be done
+in one go! In fact, within the org-file, clickable links allow to either edit a
+given event or sync & update all -- of course, without ever leaving Emacs!
+
 ** Features and limitations
 
 Advantages with the approach:
-- integrates neatly into my work-flow
-- easy to customize
-- local stores can easily be backed up
+- integrates neatly into my personal, Emacs-centric work-flow relying heavily on org-mode
+- easy to customize with some elisp
+- local calendar stores can easily be backed up (or even edited)
 - synchronization can be done manually (when online) or automatized via cron job
+  or from within Emacs
 
 Disadvantages:
-- several manual steps to update if not automatized
+- several steps requiring different tools
 - more initial set-up work
 - currently, many features of =.ics=/CalDAV are not supported:
   - no timezones
   - no organizers/invitees
   - ...
-- worse, should you import, edit and then export events, you might lose information connected with events!
 - code in early state, use at own risk!
 
 Besides calendars, this setup can be extended to contacts using:
@@ -96,13 +107,22 @@ Besides calendars, this setup can be extended to contacts using:
 - [[https://github.com/DamienCassou/khardel][khardel]] for integration into Emacs (not by me).
 
 * Getting started
-** Installing =khal=
+** Installing and configuring =vdirsyncer=
+Follow the installation instructions at [[https://github.com/pimutils/vdirsyncer]].
 
-Simply download the package for your preferred distribution or [[https://khal.readthedocs.io/en/latest/install.html][follow the installation instructions]].
+The configuration is explained in detail in the [[http://vdirsyncer.pimutils.org/en/stable/config.html#][online manual]] including a
+[[http://vdirsyncer.pimutils.org/en/stable/tutorial.html][tutorial and minimal example]].
 
-** Configuring =khal=
+When done with the configuration, run =vdirsyncer discover= to test the setup
+and then =vdirsyncer sync= to run the synchronization for the first time.
 
-You can create a configuration interactively by running =khal configure= or simply use the one below and save it to =~/.config/khal/config=:
+** Installing and configuring =khal=
+
+Simply download the package for your preferred distribution or [[https://khal.readthedocs.io/en/latest/install.html][follow the
+installation instructions]].
+
+You can create a configuration interactively by running =khal configure= or
+simply use the one below and save it to =~/.config/khal/config=:
 
 #+begin_src conf
 [calendars]
@@ -114,47 +134,75 @@ type = discover
 [locale]
 timeformat = %H:%M
 dateformat = %Y-%m-%d
-longdateformat = %Y-%m-%d
+longdateformat = %Y-%m-%d %a
 datetimeformat = %Y-%m-%d %H:%M
 longdatetimeformat = %Y-%m-%d %H:%M
 #+end_src
 
-You might want to set up a default calendar as well.
-** Install =khalel=
-
-** Configuring =khalel=
-First, make sure that the right =khal= binary will be used:
-#+begin_src emacs-lisp
-(setq khalel-khal-command "~/.local/bin/khal")
+Make sure that the =longdateformat= includes the day of the week in short form
+(=%a=) as this makes sure that org-mode recognizes the time stamps correctly
+when importing. You can test the settings by running
+#+begin_src bash :results output
+khal printformats
 #+end_src
 
-You might want to customize the values for default calendar, capture file and import file for khalel:
+#+RESULTS:
+: longdatetimeformat: 2013-12-21 21:45
+: datetimeformat: 2013-12-21 21:45
+: longdateformat: 2013-12-21 lör
+: dateformat: 2013-12-21
+: timeformat: 21:45
+
+The weekday's short form will appear in your configured local language.
+
+You might want to set up a default calendar as well or do that in the =khalel= configuration step below.
+
+** Install =khalel=
+The source code can be found at [[https://gitlab.com/hperrey/khalel]]
+
+** Configuring =khalel=
+First, make sure that the right =khal= and =vdirsyncer= executables will be used, e.g.
+#+begin_src emacs-lisp
+(setq khalel-khal-command "~/.local/bin/khal")
+(setq khalel-vdirsyncer-command "vdirsyncer")
+#+end_src
+
+You might want to customize the values for default calendar, capture template key and import file for khalel:
 #+begin_src emacs-lisp
 (setq khalel-default-calendar "privat")
 (setq khalel-capture-key "e")
 (setq khalel-import-org-file (concat org-directory "calendar.org"))
-(setq khalel-capture-org-file (concat org-directory "new_events.org"))
 #+end_src
 
-In my setup, the =new_events.org= file is mostly a temporary file as it is not part of my org-agenda. =calendar.org=, on the other hand, is in my list of agenda files. There the new events will end up in after the next sync.
+ =calendar.org= is also in my list of agenda files. There the new events will end up in after the next sync.
 
-*Warning*: =calendar.org= is being overwritten on each import to avoid collecting duplicates inside the file! The confirmation prompt for overwriting the file can be disabled via:
+*Warning*: =calendar.org= is being overwritten on each import to avoid collecting duplicates inside the file! The default is therefore to set the file up in read-only mode. The confirmation prompt for overwriting the file can be disabled via:
 #+begin_src emacs-lisp
 (setq khalel-import-org-file-confirm-overwrite nil)
 #+end_src
 
-And I never plan too long into the future, so the next three months will be more than enough to fill my agenda view:
+And I never plan too long into the future, so the next 30 days will be more than enough to fill my agenda view:
 #+begin_src emacs-lisp
-(setq khalel-import-time-delta "90d")
+(setq khalel-import-time-delta "30d")
 #+end_src
 
 Using these settings, we can now set up a capture template using a helper routine:
 #+begin_src emacs-lisp
 (khalel-add-capture-template)
 #+end_src
-This will also register an export hook that is run when the capture is finalized.
+Put this into your Emacs configuration file. The above command will also register an export hook that is run when the capture is finalized to trigger the export to =khal=.
 
 ** First steps
-You can import upcoming events through =khalel-import-upcoming-events= or create new ones through =org-capture= and pressing "e" for a new calendar event.
+You can import upcoming events through =khalel-import-upcoming-events= or create
+new ones through =org-capture= and pressing =e= (default key) for a new calendar
+event.
 
-You might want to consider adding the org file with the imported events (=calendar.org= in the above example) to your org agenda.
+You might want to consider adding the org file with the imported events
+(=calendar.org= in the above example) to your org agenda.
+
+If you visit the org file with the imported events, you will notice links below
+each event: using these (or by calling =khalel-edit-calendar-event=) you can
+edit existing events through =khal= from within Emacs.
+
+To synchronize new, edited or remote events use either the links in the imported
+calendar org file or call =khalel-run-vdirsyncer=.
