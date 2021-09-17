@@ -200,11 +200,11 @@ entries will likely result in duplicates in the calendar."
                  (buffer-base-buffer))))
          (entriescal (org-entry-get nil "calendar"))
          (calendar (or
-                    (when (string-match "[^[:blank:]]" entriescal) entriescal)
+                    (when (and entriescal (string-match "[^[:blank:]]" entriescal)) entriescal)
                     khalel-default-calendar))
          ;; export to ics
-         (ics
-          (khalel--sanitize-ics (org-icalendar-export-to-ics nil nil 't)))
+         (ics (khalel--sanitize-ics
+          (org-icalendar-export-to-ics nil nil 't)))
          ;; call khal import
          (import
           (with-temp-buffer
@@ -224,14 +224,20 @@ entries will likely result in duplicates in the calendar."
       (widen)
       (when
           (/= 0 (plist-get import :exit-status))
-        (message
-         (format
-          "%s failed importing %s into calendar '%s' and exited with status %d: %s"
-          khal-bin
-          ics
-          calendar
-          (plist-get import :exit-status)
-          (plist-get import :output)))))))
+        (let ((buf (generate-new-buffer "*khal-errors*")))
+          (khalel--make-temp-window buf 16)
+          (with-current-buffer buf
+          (insert
+           (format
+            "%s failed importing %s into calendar '%s' and exited with status %d: %s"
+            khal-bin
+            ics
+            calendar
+            (plist-get import :exit-status)
+            (plist-get import :output)))
+          (special-mode)))
+        (find-file (buffer-file-name
+                    (buffer-base-buffer)))))))
 
 
 (defun khalel-add-capture-template (&optional key)
@@ -244,7 +250,8 @@ and immediately exported to khal."
                  `(,(or key khalel-capture-key) "calendar event"
                    entry
                    (function khalel--make-temp-file)
-                   ,(concat "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n:CREATED: %U\n:CALENDAR: \n\
+                   ,(concat "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n\
+:CREATED: %U\n:CALENDAR: \n\
 :CATEGORY: event\n:LOCATION: unknown\n\
 :APPT_WARNTIME: " khalel-default-alarm "\n:END:\n" ))))
   (add-hook 'org-capture-before-finalize-hook
@@ -304,27 +311,19 @@ To be added as hook to `org-capture-before-finalize-hook'."
       (khalel-export-org-subtree-to-calendar))))
 
 (defun khalel--sanitize-ics (ics)
-  "Remove modifications to data in ICS file.
+  "Remove some modifications to data fields in ICS file.
 
 When exporting, `org-icalendar-export-to-ics' changes an entry's
-ID and summary depending on the type of date (deadline, scheduled
-or active/inactive timestamp) was discovered.
-
-While this ensures unique UIDs when multiple dates exist in an
-org entry, this is undesired when e.g. modifying events imported
-through khal. For scheduled events as created by
-`khalel-import-upcoming-events', these modifications are
-therefore removed."
+ID, description and summary depending on the type of date (deadline, scheduled
+or active/inactive timestamp) was discovered. Some are changed back
+here where appropriate for our use case."
   (with-temp-file ics
     (insert-file-contents ics)
-    ;; remove any prefix added to the UID by org-icalendar-export-to-ics
-    ;; so that we can edit and re-export events without creating duplicates
     (goto-char (point-min))
-    (while (re-search-forward "^\\(UID:[[:blank:]]*\\)SC-" nil t)
+    (while (re-search-forward "^\\(SUMMARY:[[:blank:]]*\\)S: " nil t)
       (replace-match "\\1" nil nil))
     (goto-char (point-min))
-    ;; remove prefix to summary for scheduled events
-    (while (re-search-forward "^\\(SUMMARY:[[:blank:]]*\\)S: " nil t)
+    (while (re-search-forward "^\\(DESCRIPTION:[[:blank:]]*\\)S: " nil t)
       (replace-match "\\1" nil nil)))
   ics)
 
