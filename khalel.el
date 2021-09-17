@@ -6,7 +6,7 @@
 ;; Maintainer: Hanno Perrey <hanno@hoowl.se>
 ;; Created: september 10, 2021
 ;; Modified: september 10, 2021
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Keywords: event, calendar, ics, khal
 ;; Homepage: https://gitlab.com/hperrey/khalel
 ;; Package-Requires: ((emacs "27.1"))
