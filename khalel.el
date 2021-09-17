@@ -273,6 +273,23 @@ and immediately exported to khal."
            (point-min)))
       )))
 
+(defun khalel-edit-calendar-event ()
+  "Edit the event at the cursor position using khal's interactive edit command.
+Works on imported events and used their ID to search for the
+  correct event to modify."
+  (interactive)
+  (let* ((buf (get-buffer-create "*khal-edit*"))
+         (uid (org-entry-get nil "id"))
+         (win (khalel--make-temp-window buf 16))
+         )
+    (if (and uid (string-match "[^[:blank:]]" uid))
+        (progn
+          (set-process-sentinel
+           (get-buffer-process (make-comint-in-buffer "khal-edit" nil khalel-khal-command nil "edit" uid))
+           'khalel--delete-process-window-when-done)
+          (pop-to-buffer buf))
+      (message "khalel: could not find ID associated with current entry."))))
+
 ;;;; Functions
 (defun khalel--make-temp-file ()
   "Create and visit a temporary file for capturing and exporting events."
@@ -313,13 +330,14 @@ therefore removed."
 
 (defun khalel--make-temp-window (buf height)
   "Create a temporary window with HEIGHT at the bottom of the frame to display buffer BUF."
-  (let ((win
-         (split-window
-          (frame-root-window)
-          (- (window-height (frame-root-window)) height))))
-    (set-window-buffer win buf)
-    (set-window-dedicated-p win t)
-    win))
+  (or (get-buffer-window buf 'visible)
+      (let ((win
+             (split-window
+              (frame-root-window)
+              (- (window-height (frame-root-window)) height))))
+        (set-window-buffer win buf)
+        (set-window-dedicated-p win t)
+        win)))
 
 (defun khalel--delete-process-window-when-done (process event)
   "Check status of PROCESS at each EVENT and delete window after process finished."
