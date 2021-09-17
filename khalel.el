@@ -176,10 +176,11 @@ to synchronize with remote calendars.
 
 Consider adding this file to your list of agenda files so that events \
 show up there.\n\n")
-          ;; cosmetic fix for all-day events w/o end time
+          ;; cosmetic fix for all-day events w/o start or end times:
+          ;; remove spaces after dates
           (goto-char (point-min))
-          (while (re-search-forward "^\\(SCHEDULED:.*?\\) ->" nil t)
-            (replace-match "\\1>" nil nil))
+          (while (re-search-forward "^\\(When:.*?\\) \\(>-<.*\\) >" nil t)
+            (replace-match "\\1\\2>" nil nil))
           (write-file khalel-import-org-file khalel-import-org-file-confirm-overwrite)
           (message (format "Imported %d future events from khal into %s"
                            (length (org-map-entries nil nil nil))
