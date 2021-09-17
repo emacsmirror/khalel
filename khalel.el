@@ -1,4 +1,4 @@
-;;; khalel.el --- description -*- lexical-binding: t; -*-
+;;; khalel.el --- Import, edit and create calendar events throuh khal -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2021 Hanno Perrey
 ;;
@@ -9,7 +9,7 @@
 ;; Version: 0.1.1
 ;; Keywords: event, calendar, ics, khal
 ;; Homepage: https://gitlab.com/hperrey/khalel
-;; Package-Requires: ((emacs 27.1) (cl-lib "0.5") (org 9.5))
+;; Package-Requires: ((emacs "27.1"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -28,7 +28,7 @@
 ;;
 ;;; Commentary:
 ;;
-;;  khalel provides helper routines to import upcoming events from a local
+;;  Khalel provides helper routines to import upcoming events from a local
 ;;  calendar through the command-line tool khal into an org-mode file. Commands
 ;;  to edit and to capture new events allow modifications to the calendar.
 ;;  Changes to the local calendar can be transfered to remote CalDAV servers
@@ -246,13 +246,16 @@ entries will likely result in duplicates in the calendar."
           (with-current-buffer buf
           (insert
            (format
-            "%s failed importing %s into calendar '%s' and exited with status %d: %s"
+            "%s failed importing %s into calendar '%s' and exited with status %d: %s\n"
             khal-bin
             ics
             calendar
             (plist-get import :exit-status)
             (plist-get import :output)))
+          (insert "Once the issue in the captured entry are fixed, you can re-run \
+the export by calling `khalel-export-org-subtree-to-calendar'")
           (special-mode)))
+        ;; show captured file to fix issues
         (find-file (buffer-file-name
                     (buffer-base-buffer)))))))
 
@@ -262,17 +265,16 @@ entries will likely result in duplicates in the calendar."
 If argument is nil then `khalel-capture-key' will be used as
 default instead. New events will be captured in a temporary file
 and immediately exported to khal."
-  (with-eval-after-load 'org
-    (add-to-list 'org-capture-templates
-                 `(,(or key khalel-capture-key) "calendar event"
-                   entry
-                   (function khalel--make-temp-file)
-                   ,(concat "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n\
+  (add-to-list 'org-capture-templates
+               `(,(or key khalel-capture-key) "calendar event"
+                 entry
+                 (function khalel--make-temp-file)
+                 ,(concat "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n\
 :CREATED: %U\n:CALENDAR: \n\
 :CATEGORY: event\n:LOCATION: unknown\n\
-:APPT_WARNTIME: " khalel-default-alarm "\n:END:\n" ))))
+:APPT_WARNTIME: " khalel-default-alarm "\n:END:\n" )))
   (add-hook 'org-capture-before-finalize-hook
-            'khalel--capture-finalize-calendar-export))
+            #'khalel--capture-finalize-calendar-export)
 
 
 (defun khalel-run-vdirsyncer ()
@@ -288,14 +290,13 @@ and immediately exported to khal."
           (or khalel-vdirsyncer-command
               (executable-find "vdirsyncer"))
           "sync")
-         'khalel--delete-process-window-when-done)
+         #'khalel--delete-process-window-when-done)
         ;; show output
         (sit-for 1)
         (with-current-buffer buf
           (set-window-point
            (get-buffer-window (current-buffer) 'visible)
-           (point-min)))
-      )))
+           (point-min))))))
 
 (defun khalel-edit-calendar-event ()
   "Edit the event at the cursor position using khal's interactive edit command.
@@ -304,13 +305,12 @@ Works on imported events and used their ID to search for the
   (interactive)
   (let* ((buf (get-buffer-create "*khal-edit*"))
          (uid (org-entry-get nil "id"))
-         (win (khalel--make-temp-window buf 16))
-         )
+         (win (khalel--make-temp-window buf 16)))
     (if (and uid (string-match "[^[:blank:]]" uid))
         (progn
           (set-process-sentinel
            (get-buffer-process (make-comint-in-buffer "khal-edit" nil khalel-khal-command nil "edit" uid))
-           'khalel--delete-process-window-when-done)
+           #'khalel--delete-process-window-when-done)
           (pop-to-buffer buf))
       (message "khalel: could not find ID associated with current entry."))))
 
