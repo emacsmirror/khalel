@@ -53,7 +53,7 @@
   "Calendar import functions using khal."
   :group 'Calendar)
 
-(defcustom khalel-khal-command "~/.local/bin/khal"
+(defcustom khalel-khal-command "khal"
   "The command to run when executing khal.
 
 When set to nil then it will be guessed."
