@@ -4,6 +4,8 @@
 console application =khal= and syncing with remote CalDAV calendars using
 =vdirsyncer=.
 
+[[file:screenshot_agenda.png]]
+
 =khalel= allows to access calendars stored in =.ics= files and provides means of
 listing existing events, edit them as well as to create new ones largely through
 an org-mode interface.
@@ -19,13 +21,14 @@ On the other hand, it is all text files, so hack away! :)
 * Why =khal= and =khalel=
 =khal= is a simple and fast way to read, create and edit calendar entries. It
 does, however, have a limited feature set. If you need to deal with many shared
-calendars and want to edit events with invited participants, this might not be
-the right tool. If you have a simple CalDAV calendar for your own needs /or/
-just want to see calendar events pop up in the org-mode agenda in Emacs, then
-read ahead. Also check out =khal='s [[https://khal.readthedocs.io/en/latest/index.html#features][features and limitations in its online
-documentation]] and the additional list of limitations below.
+calendar invites and want to edit events with complicated repeat patterns, this
+might not be the right tool. If you have a "simple" CalDAV calendar for your own
+needs /or/ just want to see upcoming calendar events pop up in the org-mode
+agenda in Emacs, then read ahead. Also check out =khal='s [[https://khal.readthedocs.io/en/latest/index.html#features][features and
+limitations in its online documentation]] and the additional list of limitations
+below.
 
-Adjusting the output of =khal=, one can quite easily get something that already resembles an
+Adjusting the output of =khal= slightly, one can quite easily get something that already resembles an
 org-mode file (link to the online documentation: [[https://khal.readthedocs.io/en/latest/usage.html][khal usuage]]):
 
 #+begin_src bash :results output
