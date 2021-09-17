@@ -274,7 +274,7 @@ and immediately exported to khal."
 :CATEGORY: event\n:LOCATION: unknown\n\
 :APPT_WARNTIME: " khalel-default-alarm "\n:END:\n" )))
   (add-hook 'org-capture-before-finalize-hook
-            #'khalel--capture-finalize-calendar-export)
+            #'khalel--capture-finalize-calendar-export))
 
 
 (defun khalel-run-vdirsyncer ()
