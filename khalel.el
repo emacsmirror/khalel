@@ -187,9 +187,9 @@ show up there.\n\n")
           (while (re-search-forward "^\\(When:.*?\\) \\(>-<.*\\) >" nil t)
             (replace-match "\\1\\2>" nil nil))
           (write-file khalel-import-org-file khalel-import-org-file-confirm-overwrite)
-          (message (format "Imported %d future events from khal into %s"
-                           (length (org-map-entries nil nil nil))
-                           khalel-import-org-file)))))
+          (message "Imported %d future events from khal into %s"
+                   (length (org-map-entries nil nil nil))
+                   khalel-import-org-file))))
     (kill-buffer dst)))
 
 
