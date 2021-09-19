@@ -49,6 +49,8 @@
 ;;;; Requirements
 
 (require 'org)
+(require 'ox-icalendar)
+(require 'org-capture)
 
 ;;;; Customization
 
