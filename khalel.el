@@ -56,7 +56,7 @@
 
 (defgroup khalel nil
   "Calendar import functions using khal."
-  :group 'Calendar)
+  :group 'calendar)
 
 (defcustom khalel-khal-command "khal"
   "The command to run when executing khal.
@@ -65,7 +65,7 @@ When set to nil then it will be guessed."
   :group 'khalel
   :type 'string)
 
-(defcustom khalel-default-calendar "privat"
+(defcustom khalel-default-calendar "private"
   "The khal calendar to import into by default.
 
 The calendar for a new event can be modified during the capture
