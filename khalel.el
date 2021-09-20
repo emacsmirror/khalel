@@ -1,4 +1,4 @@
-;;; khalel.el --- Import, edit and create calendar events throuh khal -*- lexical-binding: t; -*-
+;;; khalel.el --- Import, edit and create calendar events through khal -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2021 Hanno Perrey
 ;;
@@ -75,7 +75,8 @@ khal instead."
   :type 'string)
 
 (defcustom khalel-default-alarm "10"
-  "The default alarm before events to use for new events."
+  "The default time (in minutes) before an event that an alarm is to be displayed.
+Set to empty string to disable the alarm."
   :group 'khalel
   :type 'string)
 
@@ -133,7 +134,7 @@ The time delta which determines how far into the future events
 are imported is configured through `khalel-import-time-delta'.
 CAUTION: The results are imported into the file
 `khalel-import-org-file' which is overwritten to avoid adding
-duplicate entires already imported previously. As default, the
+duplicate entries already imported previously. As default, the
 file is configured to be read-only. This can be adjusted by
 configuring `khalel-import-org-file-read-only'.
 
