@@ -165,8 +165,6 @@ alarms or settings for repeating events."
                   "--once" "today" khalel-import-time-delta)
     (save-excursion
       (with-current-buffer dst
-        ;; make buffer writeable
-        (let ((inhibit-read-only 't))
           (goto-char (point-min))
           (when khalel-import-org-file-read-only
             (insert "# -*- buffer-read-only: 1; -*-\n"))
