@@ -191,7 +191,10 @@ show up there.\n\n")
           (message "Imported %d future events from khal into %s"
                    (length (org-map-entries nil nil nil))
                    khalel-import-org-file))))
-    (kill-buffer dst)))
+    (kill-buffer dst)
+    ;; revert any buffer visisting the file
+    (let ((buf (find-buffer-visiting khalel-import-org-file)))
+      (when buf (with-current-buffer buf (revert-buffer :ignore-auto :noconfirm))))))
 
 
 (defun khalel-export-org-subtree-to-calendar ()
