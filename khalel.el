@@ -277,7 +277,7 @@ and immediately exported to khal."
                  (function khalel--make-temp-file)
                  ,(concat "* %?\nSCHEDULED: %^T\n:PROPERTIES:\n\
 :CREATED: %U\n:CALENDAR: \n\
-:CATEGORY: event\n:LOCATION: unknown\n\
+:CATEGORY: event\n:LOCATION: \n\
 :APPT_WARNTIME: " khalel-default-alarm "\n:END:\n" )))
   (add-hook 'org-capture-before-finalize-hook
             #'khalel--capture-finalize-calendar-export))
