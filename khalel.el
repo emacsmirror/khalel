@@ -188,6 +188,12 @@ show up there.\n\n")
           (while (re-search-forward "^\\(- When:.*?\\) \\(>-<.*\\) >" nil t)
             (replace-match "\\1\\2>" nil nil))
           (write-file khalel-import-org-file khalel-import-org-file-confirm-overwrite)
+          ;; fix multi-line location property making property drawer invalid
+          (goto-char (point-min))
+          (while (re-search-forward "^:LOCATION: " nil t)
+            (save-match-data
+              (while (looking-at "\\(.*\\)\n\\([^:]\\)")
+                (replace-match "\\1, \\2" nil nil))))
           (message "Imported %d future events from khal into %s"
                    (length (org-map-entries nil nil nil))
                    khalel-import-org-file))))
