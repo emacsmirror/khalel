@@ -162,7 +162,7 @@ alarms or settings for repeating events."
     [[elisp:(progn (khalel-run-vdirsyncer) (khalel-import-upcoming-events))]\
 [Sync and update all]]\n"
                   "--day-format" ""
-                  "--once" "today" khalel-import-time-delta)
+                  "today" khalel-import-time-delta)
     (save-excursion
       (with-current-buffer dst
           ;; cosmetic fix for all-day events w/o start or end times:
@@ -170,16 +170,29 @@ alarms or settings for repeating events."
           (goto-char (point-min))
           (while (re-search-forward "^\\(- When:.*?\\) \\(>--<.*\\) >" nil t)
             (replace-match "\\1\\2>" nil nil))
-          (write-file khalel-import-org-file khalel-import-org-file-confirm-overwrite)
           ;; fix multi-line location property making property drawer invalid
           (goto-char (point-min))
           (while (re-search-forward "^:LOCATION: " nil t)
             (save-match-data
               (while (looking-at "\\(.*\\)\n\\([^:]\\)")
                 (replace-match "\\1, \\2" nil nil))))
+          ;; events that are scheduled as full-day and span multiple days will
+          ;; also appear multiple times in the output of `khal list' but will
+          ;; each keep the entire range in the time stamp. This results in
+          ;; identical entries in the output file and multiple occurances in the
+          ;; org-agenda. Filter these duplicates out here.
+          (let ((content (khalel--get-buffer-content-list)))
+            (with-temp-buffer
+              (khalel--insert-import-file-header)
+              (insert
+               (mapconcat 'identity
+                          (delete-dups content)
+                          ""))
+              (write-file khalel-import-org-file
+                          khalel-import-org-file-confirm-overwrite)
           (message "Imported %d future events from khal into %s"
                    (length (org-map-entries nil nil nil))
-                   khalel-import-org-file))))
+                   khalel-import-org-file)))))
     (kill-buffer dst)
     ;; revert any buffer visisting the file
     (let ((buf (find-buffer-visiting khalel-import-org-file)))
@@ -337,6 +350,17 @@ here where appropriate for our use case."
     (while (re-search-forward "^\\(DESCRIPTION:[[:blank:]]*\\)S: " nil t)
       (replace-match "\\1" nil nil)))
   ics)
+
+(defun khalel--get-buffer-content-list ()
+  "Copy the entire content of each subtree of the current buffer into a list and return it."
+  (let ((content-list '())) ; start with empty list
+    (org-element-map (org-element-parse-buffer) 'headline
+      (lambda (x)
+        (let* ((begin (org-element-property :begin x))
+               (end (org-element-property :end x))
+               (content (buffer-substring begin end)))
+          (push content content-list ))))
+    (nreverse content-list)))
 
 (defun khalel--insert-import-file-header ()
   "Insert imported events file header information into current buffer."
