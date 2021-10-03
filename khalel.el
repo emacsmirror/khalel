@@ -75,7 +75,7 @@ khal instead."
   :type 'string)
 
 (defcustom khalel-default-alarm "10"
-  "The default time (in minutes) before an event that an alarm is to be displayed.
+  "The default time (in minutes) before an event to display an alarm.
 Set to empty string to disable the alarm."
   :group 'khalel
   :type 'string)
