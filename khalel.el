@@ -156,8 +156,9 @@ alarms or settings for repeating events."
 :LOCATION: {location}\n\
 :ID: {uid}\n\
 :END:\n\
-- When: <{start-date-long} {start-time}>-<{end-date-long} {end-time}>\n\
-- Description: {description}\n- URL: {url}\n- Organizer: {organizer}\n\n\
+- When: <{start-date-long} {start-time}>--<{end-date-long} {end-time}>\n\
+- Description: {description}\n\
+- URL: {url}\n- Organizer: {organizer}\n\n\
 [[elisp:(khalel-edit-calendar-event)][Edit this event]]\
     [[elisp:(progn (khalel-run-vdirsyncer) (khalel-import-upcoming-events))]\
 [Sync and update all]]\n"
@@ -168,7 +169,7 @@ alarms or settings for repeating events."
           ;; cosmetic fix for all-day events w/o start or end times:
           ;; remove spaces after dates
           (goto-char (point-min))
-          (while (re-search-forward "^\\(- When:.*?\\) \\(>-<.*\\) >" nil t)
+          (while (re-search-forward "^\\(- When:.*?\\) \\(>--<.*\\) >" nil t)
             (replace-match "\\1\\2>" nil nil))
           (write-file khalel-import-org-file khalel-import-org-file-confirm-overwrite)
           ;; fix multi-line location property making property drawer invalid
