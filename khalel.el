@@ -102,14 +102,13 @@ lost. If this variable is set to non-nil values, the file will have the
 buffer-local variable `buffer-read-only' enabled. Otherwise, the file will
 be read-writeable and the user is tasked to be cautious."
   :group 'khalel
-  :type 'string)
-
+  :type 'boolean)
 
 (defcustom khalel-import-org-file-confirm-overwrite 't
   "When nil, always overwrite the org file into which events are imported.
 Otherwise, ask for confirmation."
   :group 'khalel
-  :type 'string)
+  :type 'boolean)
 
 (defcustom khalel-import-time-delta "30d"
   "How many hours, days, or months in the future to consider when import.
