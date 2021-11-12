@@ -122,7 +122,8 @@ and then =vdirsyncer sync= to run the synchronization for the first time.
 ** Installing and configuring =khal=
 
 Simply download the package for your preferred distribution or [[https://khal.readthedocs.io/en/latest/install.html][follow the
-installation instructions]].
+installation instructions]]. The latter might be the preferred option, as you need
+version =0.10.4= or later.
 
 You can create a configuration interactively by running =khal configure= or
 simply use the one below and save it to =~/.config/khal/config=:
@@ -209,3 +210,56 @@ edit existing events through =khal= from within Emacs.
 
 To synchronize new, edited or remote events use either the links in the imported
 calendar org file or call =khalel-run-vdirsyncer=.
+* Troubleshooting
+** Getting warning message =Ignoring unsafe file local variable: buffer-read-only= when running =khalel-import-upcoming-events=
+The =calendar.org= file in which the upcoming events are imported into, is set
+to =read-only-mode= as any changes to this file would be overwritten by the next
+import. This is done via so-called "file local variables" which, by default, are
+ignored by Emacs until they are marked "safe" by the user.
+
+To mark this particular variable as safe, set the variable
+=safe-local-variable-values= in your Emacs configuration, e.g.:
+#+begin_src emacs-lisp
+(setq safe-local-variable-values
+   (quote
+    ((buffer-read-only . 1))))
+#+end_src
+** The file with imported events is empty/contains no scheduled items after running =khal-import-upcoming-events=
+This can have a number of reasons. First check your =khal= installation by running in the terminal:
+#+begin_src sh
+khal list today 30d
+#+end_src
+
+If you get an error message or empty output, please double-check your =khal=
+configuration and make sure that you have events scheduled during the next
+month.
+
+In case you do get output from the above command but the file =khalel= imports
+into is still empty, please check your =*Messages*= buffer for error messages
+and continue in the corresponding section.
+
+** =Searching for program: No such file or directory, khal=
+This indicates that =khal= could not be found. Run
+#+begin_src sh
+which khal
+#+end_src
+and then adjust the variable =khalel-khal-command= to match this path.
+
+** Error message =khal exited with non-zero exit code; see buffer ‘*khal-output*’ for details.=
+As stated in the error message, open the =*khal-output*= to see the exact cause
+of the error.
+
+A likely reason for this error is =khalel= relying on VCALENDAR fields not
+supported in the installed =khal= version. Double-check that your version
+matches the required one:
+#+begin_src sh
+khal --version
+#+end_src
+
+See the above section on =khal= installation for the version requirements.
+
+Should a later version than the above mentioned cause this error, then please
+report this problem! Include the exact version of =khal= and the contents of the
+=*khal-output*= buffer.
+* Reporting issues
+Please open an issue on [[https://gitlab.com/hperrey/khalel/-/issues][gitlab]] (preferred) or write an [[mailto:khalel-issues@hoowl.se][email]].
