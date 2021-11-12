@@ -144,12 +144,12 @@ on. Khal only supports certain (basic) fields when creating lists.
 Examples of missing fields are timezone information, categories,
 alarms or settings for repeating events."
   (interactive)
-  (let
+  (let*
       ( ;; call khal directly.
        (khal-bin (or khalel-khal-command
                      (executable-find "khal")))
-       (dst (generate-new-buffer "khalel-output")))
-    (call-process khal-bin nil dst nil "list" "--format"
+       (dst (generate-new-buffer "*khalel-output*"))
+       (exitval (call-process khal-bin nil dst nil "list" "--format"
                   "* {title} {cancelled}\n\
 :PROPERTIES:\n:CALENDAR: {calendar}\n\
 :LOCATION: {location}\n\
@@ -162,7 +162,7 @@ alarms or settings for repeating events."
     [[elisp:(progn (khalel-run-vdirsyncer) (khalel-import-upcoming-events))]\
 [Sync and update all]]\n"
                   "--day-format" ""
-                  "today" khalel-import-time-delta)
+                  "today" khalel-import-time-delta)))
     (save-excursion
       (with-current-buffer dst
           ;; cosmetic fix for all-day events w/o start or end times:
@@ -193,7 +193,9 @@ alarms or settings for repeating events."
           (message "Imported %d future events from khal into %s"
                    (length (org-map-entries nil nil nil))
                    khalel-import-org-file)))))
-    (kill-buffer dst)
+    (if (/= 0 exitval)
+        (message "khal exited with non-zero exit code; see buffer `*khal-output*' for details.")
+      (kill-buffer dst))
     ;; revert any buffer visisting the file
     (let ((buf (find-buffer-visiting khalel-import-org-file)))
       (when buf (with-current-buffer buf (revert-buffer :ignore-auto :noconfirm))))))
