@@ -333,13 +333,23 @@ Works on imported events and used their ID to search for the
 (defun khalel--make-temp-file ()
   "Create and visit a temporary file for capturing and exporting events."
   (set-buffer (find-file-noselect (make-temp-file "khalel-capture" nil ".org")))
+  ;; mark buffer as new and appropriate to kill after capture process.
+  (org-capture-put :new-buffer t)
+  (org-capture-put :kill-buffer t))
 
 (defun khalel--capture-finalize-calendar-export ()
   "Export current event capture.
 To be added as hook to `org-capture-before-finalize-hook'."
   (let ((key  (plist-get org-capture-plist :key)))
-    (when (and (not org-note-abort) (equal key khalel-capture-key))
-      (khalel-export-org-subtree-to-calendar))))
+    (when (and
+           (not org-note-abort)
+           (equal key khalel-capture-key)
+           (not (zerop (khalel-export-org-subtree-to-calendar))))
+      ;; export finished with non-zero exit status,
+      ;; do not clean up buffer/wconf to leave error msg intact and visible
+      (org-capture-put :new-buffer nil)
+      (org-capture-put :kill-buffer nil)
+      (org-capture-put :return-to-wconf (current-window-configuration)))))
 
 (defun khalel--sanitize-ics (ics)
   "Remove some modifications to data fields in ICS file.
