@@ -245,9 +245,9 @@ which khal
 #+end_src
 and then adjust the variable =khalel-khal-command= to match this path.
 
-** Error message =khal exited with non-zero exit code; see buffer ‘*khal-output*’ for details.=
-As stated in the error message, open the =*khal-output*= to see the exact cause
-of the error.
+** Error message =khal exited with non-zero exit code; see buffer ‘*khal-errors*’ for details.=
+As stated in the error message, open the =*khal-errors*= buffer to see the exact
+cause of the error.
 
 A likely reason for this error is =khalel= relying on VCALENDAR fields not
 supported in the installed =khal= version. Double-check that your version
@@ -260,6 +260,6 @@ See the above section on =khal= installation for the version requirements.
 
 Should a later version than the above mentioned cause this error, then please
 report this problem! Include the exact version of =khal= and the contents of the
-=*khal-output*= buffer.
+=*khal-errors*= buffer.
 * Reporting issues
 Please open an issue on [[https://gitlab.com/hperrey/khalel/-/issues][gitlab]] (preferred) or write an [[mailto:khalel-issues@hoowl.se][email]].

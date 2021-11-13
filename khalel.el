@@ -149,8 +149,10 @@ alarms or settings for repeating events."
        (khal-bin (or khalel-khal-command
                      (executable-find "khal")))
        (dst (generate-new-buffer "*khalel-output*"))
-       (exitval (call-process khal-bin nil dst nil "list" "--format"
-                  "* {title} {cancelled}\n\
+       (err (get-buffer-create "*khalel-errors*"))
+       (exitval (call-process khal-bin nil
+                              (list dst err) nil "list" "--format"
+                              "* {title} {cancelled}\n\
 :PROPERTIES:\n:CALENDAR: {calendar}\n\
 :LOCATION: {location}\n\
 :ID: {uid}\n\
@@ -194,7 +196,7 @@ alarms or settings for repeating events."
                    (length (org-map-entries nil nil nil))
                    khalel-import-org-file)))))
     (if (/= 0 exitval)
-        (message "khal exited with non-zero exit code; see buffer `*khal-output*' for details.")
+        (message "khal exited with non-zero exit code; see buffer `*khal-errors*' for details.")
       (kill-buffer dst))
     ;; revert any buffer visisting the file
     (let ((buf (find-buffer-visiting khalel-import-org-file)))
