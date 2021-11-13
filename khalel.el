@@ -251,25 +251,28 @@ entries will likely result in duplicates in the calendar."
              :output
              (buffer-string)))))
       (widen)
-      (when
-          (/= 0 (plist-get import :exit-status))
-        (let ((buf (generate-new-buffer "*khal-errors*")))
-          (khalel--make-temp-window buf 16)
-          (with-current-buffer buf
-          (insert
-           (format
-            "%s failed importing %s into calendar '%s' and exited with status %d: %s\n"
-            khal-bin
-            ics
-            calendar
-            (plist-get import :exit-status)
-            (plist-get import :output)))
-          (insert "Once the issue in the captured entry are fixed, you can re-run \
+      (let ((exitstat (plist-get import :exit-status)))
+        (when
+            (/= 0 exitstat)
+          (let ((buf (generate-new-buffer "*khal-errors*")))
+            (khalel--make-temp-window buf 16)
+            (with-current-buffer buf
+              (insert
+               (message
+                (format
+                 "%s failed importing %s into calendar '%s' and exited with status %d\n"
+                 khal-bin
+                 ics
+                 calendar
+                 (plist-get import :exit-status))))
+              (insert "%s\n" (plist-get import :output))
+              (insert "Once the issues in the captured entry are fixed, you can re-run \
 the export by calling `khalel-export-org-subtree-to-calendar'")
-          (special-mode)))
-        ;; show captured file to fix issues
-        (find-file (buffer-file-name
-                    (buffer-base-buffer)))))))
+              (special-mode)))
+          ;; show captured file to fix issues
+          (find-file (buffer-file-name
+                      (buffer-base-buffer))))
+        exitstat))))
 
 
 (defun khalel-add-capture-template (&optional key)
