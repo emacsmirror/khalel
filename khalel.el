@@ -332,7 +332,7 @@ Works on imported events and used their ID to search for the
 ;;;; Functions
 (defun khalel--make-temp-file ()
   "Create and visit a temporary file for capturing and exporting events."
-  (find-file (make-temp-file "khalel-capture" nil ".org")))
+  (set-buffer (find-file-noselect (make-temp-file "khalel-capture" nil ".org")))
 
 (defun khalel--capture-finalize-calendar-export ()
   "Export current event capture.
