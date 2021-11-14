@@ -180,7 +180,10 @@ You might want to customize the values for default calendar, capture template ke
 
  =calendar.org= is also in my list of agenda files. There the new events will end up in after the next sync.
 
-*Warning*: =calendar.org= is being overwritten on each import to avoid collecting duplicates inside the file! The default is therefore to set the file up in read-only mode. The confirmation prompt for overwriting the file can be disabled via:
+*Warning*: =calendar.org= is being overwritten on each import to avoid
+ collecting duplicates inside the file! The default is therefore to set the file
+ up in read-only mode. The confirmation prompt for overwriting the file can be
+ disabled via:
 #+begin_src emacs-lisp
 (setq khalel-import-org-file-confirm-overwrite nil)
 #+end_src
@@ -194,7 +197,16 @@ Using these settings, we can now set up a capture template using a helper routin
 #+begin_src emacs-lisp
 (khalel-add-capture-template)
 #+end_src
-Put this into your Emacs configuration file. The above command will also register an export hook that is run when the capture is finalized to trigger the export to =khal=.
+Put this into your Emacs configuration file. The above command will also
+register an export hook that is run when the capture is finalized to trigger the
+export to =khal=.
+
+After each capture, I prefer the file with upcoming events to be updated
+automatically as this is a quick process:
+#+begin_src emacs-lisp
+(setq khalel-update-upcoming-events-after-capture 't)
+#+end_src
+
 
 ** First steps
 You can import upcoming events through =khalel-import-upcoming-events= or create
