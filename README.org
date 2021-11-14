@@ -250,16 +250,16 @@ As stated in the error message, open the =*khal-errors*= buffer to see the exact
 cause of the error.
 
 A likely reason for this error is =khalel= relying on VCALENDAR fields not
-supported in the installed =khal= version. Double-check that your version
-matches the required one:
+supported in the installed =khal= version (e.g. =khal= reporting =critical:
+'url'=). Double-check that your version matches the required one:
 #+begin_src sh
 khal --version
 #+end_src
 
 See the above section on =khal= installation for the version requirements.
 
-Should a later version than the above mentioned cause this error, then please
-report this problem! Include the exact version of =khal= and the contents of the
+Should a later version than the above mentioned cause any errors, then please
+report this problem and include the version of =khal= and the contents of the
 =*khal-errors*= buffer.
 * Reporting issues
 Please open an issue on [[https://gitlab.com/hperrey/khalel/-/issues][gitlab]] (preferred) or write an [[mailto:khalel-issues@hoowl.se][email]].

@@ -148,10 +148,11 @@ alarms or settings for repeating events."
       ( ;; call khal directly.
        (khal-bin (or khalel-khal-command
                      (executable-find "khal")))
-       (dst (generate-new-buffer "*khalel-output*"))
-       (err (get-buffer-create "*khalel-errors*"))
+       (dst (generate-new-buffer "*khal-output*"))
+       (err (get-buffer-create "*khal-errors*"))
+       (errfn (make-temp-file "khalel-khal-errors"))
        (exitval (call-process khal-bin nil
-                              (list dst err) nil "list" "--format"
+                              (list dst errfn) nil "list" "--format"
                               "* {title} {cancelled}\n\
 :PROPERTIES:\n:CALENDAR: {calendar}\n\
 :LOCATION: {location}\n\
@@ -166,6 +167,9 @@ alarms or settings for repeating events."
                   "--day-format" ""
                   "today" khalel-import-time-delta)))
     (save-excursion
+      (with-current-buffer err
+        (goto-char (point-max))
+        (insert-file-contents errfn))
       (with-current-buffer dst
           ;; cosmetic fix for all-day events w/o start or end times:
           ;; remove spaces after dates
