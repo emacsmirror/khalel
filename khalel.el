@@ -123,6 +123,11 @@ When set to nil then it will be guessed."
   :group 'khalel
   :type 'string)
 
+(defcustom khalel-update-upcoming-events-after-capture nil
+  "Whether to automatically update the imported events after a new capture."
+  :group 'khalel
+  :type 'boolean)
+
 
 ;;;; Commands
 
@@ -354,13 +359,18 @@ To be added as hook to `org-capture-before-finalize-hook'."
   (let ((key  (plist-get org-capture-plist :key)))
     (when (and
            (not org-note-abort)
-           (equal key khalel-capture-key)
-           (not (khalel-export-org-subtree-to-calendar)))
-      ;; export finished with non-zero exit status,
-      ;; do not clean up buffer/wconf to leave error msg intact and visible
-      (org-capture-put :new-buffer nil)
-      (org-capture-put :kill-buffer nil)
-      (org-capture-put :return-to-wconf (current-window-configuration)))))
+           (equal key khalel-capture-key))
+      (if
+          (not (khalel-export-org-subtree-to-calendar))
+          ;; export finished with non-zero exit status,
+          ;; do not clean up buffer/wconf to leave error msg intact and visible
+          (progn
+            (org-capture-put :new-buffer nil)
+            (org-capture-put :kill-buffer nil)
+            (org-capture-put :return-to-wconf (current-window-configuration)))
+        (when
+            khalel-update-upcoming-events-after-capture
+          (khalel-import-upcoming-events))))))
 
 (defun khalel--sanitize-ics (ics)
   "Remove some modifications to data fields in ICS file.
