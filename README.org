@@ -201,13 +201,6 @@ Put this into your Emacs configuration file. The above command will also
 register an export hook that is run when the capture is finalized to trigger the
 export to =khal=.
 
-After each capture, I prefer the file with upcoming events to be updated
-automatically as this is a quick process:
-#+begin_src emacs-lisp
-(setq khalel-update-upcoming-events-after-capture 't)
-#+end_src
-
-
 ** First steps
 You can import upcoming events through =khalel-import-upcoming-events= or create
 new ones through =org-capture= and pressing =e= (default key) for a new calendar

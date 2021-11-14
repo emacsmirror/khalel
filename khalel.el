@@ -123,7 +123,7 @@ When set to nil then it will be guessed."
   :group 'khalel
   :type 'string)
 
-(defcustom khalel-update-upcoming-events-after-capture nil
+(defcustom khalel-update-upcoming-events-after-capture 't
   "Whether to automatically update the imported events after a new capture."
   :group 'khalel
   :type 'boolean)
