@@ -65,6 +65,14 @@ When set to nil then it will be guessed."
   :group 'khalel
   :type 'string)
 
+(defcustom khalel-khal-config nil
+  "The configuration file to use when executing khal.
+
+When set to nil then the default location
+\($XDG_CONFIG_HOME/khal/config\) will be used."
+  :group 'khalel
+  :type 'string)
+
 (defcustom khalel-default-calendar "private"
   "The khal calendar to import into by default.
 
@@ -153,12 +161,15 @@ alarms or settings for repeating events."
       ( ;; call khal directly.
        (khal-bin (or khalel-khal-command
                      (executable-find "khal")))
+       (khal-cfg (when khalel-khal-config (format "-c %s" khalel-khal-config)))
        (dst (generate-new-buffer "*khal-output*"))
        (err (get-buffer-create "*khal-errors*"))
        (errfn (make-temp-file "khalel-khal-errors"))
-       (exitval (call-process khal-bin nil
-                              (list dst errfn) nil "list" "--format"
-                              "* {title} {cancelled}\n\
+       ;; determine arguments for khal call
+       (args
+        (remq nil  ;; remove nil elements
+              `(,khal-cfg "list" "--format"
+                          "* {title} {cancelled}\n\
 :PROPERTIES:\n:CALENDAR: {calendar}\n\
 :LOCATION: {location}\n\
 :ID: {uid}\n\
@@ -170,7 +181,10 @@ alarms or settings for repeating events."
     [[elisp:(progn (khalel-run-vdirsyncer) (khalel-import-upcoming-events))]\
 [Sync and update all]]\n"
                   "--day-format" ""
-                  "today" khalel-import-time-delta)))
+                  "today" ,(format "%s" khalel-import-time-delta))))
+       (exitval (apply 'call-process khal-bin nil
+                       (list dst errfn) nil
+                       args)))
     (save-excursion
       (with-current-buffer err
         (goto-char (point-max))
@@ -244,7 +258,17 @@ Return t on success and nil otherwise."
                     khalel-default-calendar))
          ;; export to ics
          (ics (khalel--sanitize-ics
-          (org-icalendar-export-to-ics nil nil 't)))
+               (org-icalendar-export-to-ics nil nil 't)))
+         (khal-cfg (when khalel-khal-config (format "-c %s" khalel-khal-config)))
+         ;; determine args to khal
+         (args
+          (remq nil ;; remove nil elements
+                `(,khal-cfg
+                  "import"
+                  ,(when calendar
+                     (format "-a%s" calendar))
+                  "--batch"
+                  ,(concat path ics))))
          ;; call khal import only if ics verification succeeds
          (import
           (or (khalel--verify-exported-ics ics)
@@ -252,15 +276,9 @@ Return t on success and nil otherwise."
                 (list
                  :process khal-bin
                  :exit-status
-                 (if calendar
-                     (call-process khal-bin nil t nil
-                                   "import" "-a" calendar
-                                   "--batch"
-                                   (concat path ics))
-                   (call-process khal-bin nil t nil
-                                 "import"
-                                 "--batch"
-                                 (concat path ics)))
+                 (apply 'call-process
+                        khal-bin nil t nil
+                        args)
                  :output
                  (buffer-string))))))
       (widen)
