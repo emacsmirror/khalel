@@ -215,6 +215,32 @@ edit existing events through =khal= from within Emacs.
 
 To synchronize new, edited or remote events use either the links in the imported
 calendar org file or call =khalel-run-vdirsyncer=.
+* Tips and tricks
+** Creating repeating events
+When capturing new events, you can create simple repeating patterns using the org timestamp syntax with repeater intervals. For example,
+#+begin_example
+SCHEDULED: <2021-12-07 tis +1w>
+#+end_example
+sets the corresponding event to repeat every week. See section "Timestamps" in the org manual for more details.
+
+For irregular repeating patterns, you can create several events with the same basic information by adding further timestamps and ranges to the description field of the capture template:
+#+begin_example
+,* example event
+SCHEDULED: <2021-11-21 sön 13:27>--<2021-11-21 sön 19:22>
+:PROPERTIES:
+:CREATED: [2021-11-21 sön 13:27]
+:CALENDAR:
+:CATEGORY: event
+:LOCATION:
+:APPT_WARNTIME: 10
+:ID:       99c11a2c-bdbd-4625-81b8-4d61729ce64f
+:END:
+repeats:
+- <2021-11-22 mån 17:01-20:01>
+- <2021-11-23 tis 19:00>--<2021-11-23 tis 21:21>
+#+end_example
+
+For each of the timestamps in the bottom, additional events (with unique IDs) will be created through the ics export. Please not that using actual (sub) headings would create events with different descriptions. Also, the "SCHEDULED" for the main event is expected to be always present, even when further events are added as part of the description.
 * Troubleshooting
 ** Getting warning message =Ignoring unsafe file local variable: buffer-read-only= when running =khalel-import-upcoming-events=
 The =calendar.org= file in which the upcoming events are imported into, is set
