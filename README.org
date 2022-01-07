@@ -162,7 +162,29 @@ The weekday's short form will appear in your configured local language.
 You might want to set up a default calendar as well or do that in the =khalel= configuration step below.
 
 ** Install =khalel=
-The source code can be found at [[https://gitlab.com/hperrey/khalel]]
+The package is available from MELPA: [[https://melpa.org/#/khalel][file:https://melpa.org/packages/khalel-badge.svg]]
+
+Install it through =package-install=.
+
+Alternatively, you can download the source code from [[https://gitlab.com/hperrey/khalel]]
+
+To load the package, I recommend [[https://github.com/jwiegley/use-package][use-package]].
+*** Doom Emacs
+If you are using [[Https://github.com/hlissner/doom-emacs/][Doom Emacs]], you can install and load =khalel= by adding
+#+begin_src emacs-lisp
+(package! khalel)
+#+end_src
+to your =packages.el= and
+#+begin_src emacs-lisp
+(use-package! khalel
+  :commands (khalel-export-org-subtree-to-calendar
+             khalel-import-upcoming-events
+             khalel-edit-calender-event
+             khalel-add-capture-template
+             ))
+#+end_src
+to your =config.el=. Then execute =./doom sync= in the =~/.emacs.d/bin/=
+directory to trigger the download of the package.
 
 ** Configuring =khalel=
 First, make sure that the right =khal= and =vdirsyncer= executables will be used, e.g.
