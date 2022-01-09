@@ -288,5 +288,15 @@ See the above section on =khal= installation for the version requirements.
 Should a later version than the above mentioned cause any errors, then please
 report this problem and include the version of =khal= and the contents of the
 =*khal-errors*= buffer.
+** =khal= gives =PytzUsageWarning= messages
+This might be a [[https://github.com/pimutils/khal/issues/1092][known issue (#1092)]] in =khal=. One approach is to downgrade to
+an earlier version of =tzlocal=:
+#+begin_src sh
+sudo pip install tzlocal==2
+#+end_src
+
+Other options are discussed in the linked issue tracker in case this downgrade
+is not suitable for you.
+
 * Reporting issues
 Please open an issue on [[https://gitlab.com/hperrey/khalel/-/issues][gitlab]] (preferred) or write an [[mailto:khalel-issues@hoowl.se][email]].
