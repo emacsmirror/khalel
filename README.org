@@ -197,7 +197,7 @@ You might want to customize the values for default calendar, capture template ke
 #+begin_src emacs-lisp
 (setq khalel-default-calendar "privat")
 (setq khalel-capture-key "e")
-(setq khalel-import-org-file (concat org-directory "calendar.org"))
+(setq khalel-import-org-file (concat org-directory "/" "calendar.org"))
 #+end_src
 
  =calendar.org= is also in my list of agenda files. There the new events will end up in after the next sync.
