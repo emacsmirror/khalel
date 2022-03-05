@@ -439,7 +439,7 @@ Return a plist with details of problems or nil if no issues were found."
                :output result))))
 
 (defun khalel--get-buffer-content-list ()
-  "Copy the entire content of each subtree of the current buffer into a list and return it."
+  "Return the entire content of each subtree of the current buffer asa list."
   (let ((content-list '())) ; start with empty list
     (org-element-map (org-element-parse-buffer) 'headline
       (lambda (x)
