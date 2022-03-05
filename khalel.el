@@ -170,6 +170,9 @@ duplicate entries already imported previously. As default, the
 file is configured to be read-only. This can be adjusted by
 configuring `khalel-import-org-file-read-only'.
 
+When a prefix argument is given, the import will be limited to
+the calendar `khalel-default-calendar'.
+
 Please note that the resulting org file does not necessarily
 include all information contained in the .ics files it is based
 on. Khal only supports certain (basic) fields when creating lists.
@@ -182,16 +185,17 @@ alarms or settings for repeating events."
        (khal-bin (or khalel-khal-command
                      (executable-find "khal")))
        (khal-cfg (when khalel-khal-config (format "-c %s" khalel-khal-config)))
+       (khal-cal (when current-prefix-arg (format "-a%s" khalel-default-calendar)))
        (dst (generate-new-buffer "*khal-output*"))
        (err (get-buffer-create "*khal-errors*"))
        (errfn (make-temp-file "khalel-khal-errors"))
        ;; determine arguments for khal call
        (args
         (remq nil  ;; remove nil elements
-              `(,khal-cfg "list" "--format"
-                  "--day-format" ""
-                  "today" ,(format "%s" khalel-import-time-delta))))
+              `(,khal-cfg "list" ,khal-cal "--format"
                           ,khalel-import-format
+                          "--day-format" ""
+                          "today" ,(format "%s" khalel-import-time-delta))))
        (exitval (apply 'call-process khal-bin nil
                        (list dst errfn) nil
                        args)))
