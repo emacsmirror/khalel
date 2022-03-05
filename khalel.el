@@ -118,6 +118,26 @@ Otherwise, ask for confirmation."
   :group 'khalel
   :type 'boolean)
 
+(defcustom khalel-import-format "* {title} {cancelled} :{calendar}:\n\
+:PROPERTIES:\n:CALENDAR: {calendar}\n\
+:LOCATION: {location}\n\
+:ID: {uid}\n\
+:END:\n\
+- When: <{start-date-long} {start-time}>--<{end-date-long} {end-time}>\n\
+- Where: {location}\n\
+- Description: {description}\n\
+- URL: {url}\n- Organizer: {organizer}\n\n\
+[[elisp:(khalel-edit-calendar-event)][Edit this event]]\
+    [[elisp:(progn (khalel-run-vdirsyncer) (khalel-import-upcoming-events))]\
+[Sync and update all]]\n"
+  "The format string to pass to khal when importing events.
+
+See the documentation to khal for valid placeholders (in curly
+brackets). The result should be properly formated org-mode
+syntax."
+  :group 'khalel
+  :type  'string)
+
 (defcustom khalel-import-time-delta "30d"
   "How many hours, days, or months in the future to consider when import.
 Used as DELTA argument to the khal date range."
@@ -169,19 +189,9 @@ alarms or settings for repeating events."
        (args
         (remq nil  ;; remove nil elements
               `(,khal-cfg "list" "--format"
-                          "* {title} {cancelled}\n\
-:PROPERTIES:\n:CALENDAR: {calendar}\n\
-:LOCATION: {location}\n\
-:ID: {uid}\n\
-:END:\n\
-- When: <{start-date-long} {start-time}>--<{end-date-long} {end-time}>\n\
-- Description: {description}\n\
-- URL: {url}\n- Organizer: {organizer}\n\n\
-[[elisp:(khalel-edit-calendar-event)][Edit this event]]\
-    [[elisp:(progn (khalel-run-vdirsyncer) (khalel-import-upcoming-events))]\
-[Sync and update all]]\n"
                   "--day-format" ""
                   "today" ,(format "%s" khalel-import-time-delta))))
+                          ,khalel-import-format
        (exitval (apply 'call-process khal-bin nil
                        (list dst errfn) nil
                        args)))
