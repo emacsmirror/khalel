@@ -58,6 +58,10 @@
   "Calendar import functions using khal."
   :group 'calendar)
 
+(defgroup khalel-advanced nil
+  "Advanced options for khal and khalel."
+  :group 'khalel)
+
 (defcustom khalel-khal-command "khal"
   "The command to run when executing khal.
 
@@ -70,7 +74,7 @@ When set to nil then it will be guessed."
 
 When set to nil then the default location
 \($XDG_CONFIG_HOME/khal/config\) will be used."
-  :group 'khalel
+  :group 'khalel-advanced
   :type 'string)
 
 (defcustom khalel-default-calendar "private"
@@ -109,7 +113,7 @@ As the file is overwritten on repeated imports, modifications would get
 lost. If this variable is set to non-nil values, the file will have the
 buffer-local variable `buffer-read-only' enabled. Otherwise, the file will
 be read-writeable and the user is tasked to be cautious."
-  :group 'khalel
+  :group 'khalel-advanced
   :type 'boolean)
 
 (defcustom khalel-import-org-file-confirm-overwrite 't
@@ -135,7 +139,8 @@ Otherwise, ask for confirmation."
 See the documentation to khal for valid placeholders (in curly
 brackets). The result should be properly formated org-mode
 syntax."
-  :group 'khalel
+  :group 'khalel-advanced
+  :type  'string)
   :type  'string)
 
 (defcustom khalel-import-time-delta "30d"
