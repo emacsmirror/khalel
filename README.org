@@ -241,6 +241,23 @@ repeats:
 #+end_example
 
 For each of the timestamps in the bottom, additional events (with unique IDs) will be created through the ics export. Please not that using actual (sub) headings would create events with different descriptions. Also, the "SCHEDULED" for the main event is expected to be always present, even when further events are added as part of the description.
+** Limiting import to a single calendar
+If you call =khal-import-upcoming-events= with a prefix argument (e.g. =C-u=), the import will be limited to the default calendar defined in =khal-default-calendar=.
+** Importing calendars into separate =org= files
+If you have several calendars that you would like to import into separate =org= files, you can define your own import routines like this:
+#+begin_src emacs-lisp
+(defun hanno/import-upcoming-work-events ()
+  "Import only work events via `khalel-import-upcoming-events`."
+  (interactive)
+  (let ((current-prefix-arg '(4))
+    (khalel-default-calendar "work")
+    (khalel-import-org-file (concat org-directory "work-events.org")))
+      (call-interactively #'khalel-import-upcoming-events)))
+#+end_src
+This limits the import to a single calendar =work= and stores it in the file
+=work-events.org=. Consider to also modify =khalel-import-org-file-header= and
+=khalel-import-format= to make them reflect your customization.
+
 * Troubleshooting
 ** Getting warning message =Ignoring unsafe file local variable: buffer-read-only= when running =khalel-import-upcoming-events=
 The =calendar.org= file in which the upcoming events are imported into, is set
