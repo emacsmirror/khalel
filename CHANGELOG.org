@@ -1,8 +1,16 @@
-#+TITLE: Changelog
+#+TITLE: =khalel= changelog
 
 Below are the summarized changes made in each version:
 
-
+* v0.1.7
+- adds variable =khal= configuration file location: =khalel-khal-config=. The
+  default is =nil= which uses =khal='s default location.
+- adds configurable format for import of events: =khal-import-format=.
+- it is now possible to limit the import of events to only the default calendar
+  by calling =khal-import-upcoming-events= with a prefix argument.
+- the header of the org file with imported events can be changed through the
+  variable =khalel-import-org-file-header=
+- allows editing events scheduled in the past
 * v0.1.6
 - improves error handling on import and capture
 - add (rudimentary) verification of ics export results
