@@ -93,7 +93,9 @@ Set to empty string to disable the alarm."
   :type 'string)
 
 (defcustom khalel-capture-key "e"
-  "The key to use when registering an `org-capture' template via `khalel-add-capture-template'."
+  "The key used for the `org-capture' template for events.
+
+Run `khalel-add-capture-template' to register the template."
   :group 'khalel
   :type 'string)
 
@@ -137,7 +139,7 @@ Otherwise, ask for confirmation."
   "The format string to pass to khal when importing events.
 
 See the documentation to khal for valid placeholders (in curly
-brackets). The result should be properly formated org-mode
+brackets). The result should be properly formated 'org-mode'
 syntax."
   :group 'khalel-advanced
   :type  'string)
@@ -479,7 +481,7 @@ Return a plist with details of problems or nil if no issues were found."
   (insert khalel-import-org-file-header))
 
 (defun khalel--make-temp-window (buf height)
-  "Create a temporary window with HEIGHT at the bottom of the frame to display buffer BUF."
+  "Create a temporary window with HEIGHT at the frame bottom displaying buffer BUF."
   (or (get-buffer-window buf 'visible)
       (let ((win
              (split-window
