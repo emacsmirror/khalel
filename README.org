@@ -102,7 +102,7 @@ Disadvantages:
   - no timezones
   - no organizers/invitees
   - ...
-- code in early state, use at own risk!
+- code is still evolving and features might change from one version to the next
 
 Besides calendars, this setup can be extended to contacts using:
 - [[https://github.com/pimutils/vdirsyncer][vdirsyncer]] (again) to mirror contacts from CardDAV server locally,
