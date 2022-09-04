@@ -392,7 +392,10 @@ Works on imported events and used their ID to search for the
     (if (and uid (string-match "[^[:blank:]]" uid))
         (progn
           (set-process-sentinel
-           (get-buffer-process (make-comint-in-buffer "khal-edit" nil khalel-khal-command nil "edit" uid))
+           (get-buffer-process (make-comint-in-buffer
+                                "khal-edit" nil
+                                khalel-khal-command nil
+                                "edit" "--show-past" uid))
            #'khalel--delete-process-window-when-done)
           (pop-to-buffer buf))
       (message "khalel: could not find ID associated with current entry."))))
