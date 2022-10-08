@@ -280,6 +280,24 @@ If you have several calendars that you would like to import into separate =org= 
 This limits the import to a single calendar =work= and stores it in the file
 =work-events.org=. Consider to also modify =khalel-import-org-file-header= and
 =khalel-import-format= to make them reflect your customization.
+** Customizing the =org= file that events are imported into
+If you want to customize the khalel template, e.g. if you want the scheduled date to be a property, you can do this the following way:
+
+#+begin_src emacs-lisp
+(setq khalel-import-format "* {title} {cancelled}\n\
+  :PROPERTIES:\n:CALENDAR: {calendar}\n\
+  :LOCATION: {location}\n\
+  :ID: {uid}\n\
+  :END:\n\
+  SCHEDULED: <{start-date-long} {start-time}>--<{end-date-long} {end-time}>\n\
+  - Description: {description}\n\
+  - URL: {url}\n- Organizer: {organizer}\n\n\
+  [[elisp:(khalel-edit-calendar-event)][Edit this event]]\
+      [[elisp:(progn (khalel-run-vdirsyncer) (khalel-import-events))]\
+  [Sync and update all]]\n")
+#+end_src
+
+You can also change the variable =khalel-import-org-file-header= if you want to change the header of the generated file (e.g. if you want to add a file tag or something like that).
 
 * Troubleshooting
 ** Getting warning message =Ignoring unsafe file local variable: buffer-read-only= when running =khalel-import-events=
