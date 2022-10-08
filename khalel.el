@@ -28,7 +28,7 @@
 ;;
 ;;; Commentary:
 ;;
-;;  Khalel provides helper routines to import upcoming events from a local
+;;  Khalel provides helper routines to import current events from a local
 ;;  calendar through the command-line tool khal into an org-mode file. Commands
 ;;  to edit and to capture new events allow modifications to the calendar.
 ;;  Changes to the local calendar can be transfered to remote CalDAV servers
@@ -42,7 +42,7 @@
 ;;  - call `khalel-add-capture-template' to set up a capture template
 ;;  - import events through `khalel-import-events',
 ;;    edit them through `khalel-edit-calendar-event' or create new ones through `org-capture'
-;;  - consider adding the import org file to your org agenda to show upcoming events there
+;;  - consider adding the import org file to your org agenda to show current events there
 ;;
 ;;; Code:
 
@@ -181,13 +181,23 @@ When set to nil then it will be guessed."
   :group 'khalel
   :type 'string)
 
-(defcustom khalel-update-upcoming-events-after-capture 't
+(define-obsolete-variable-alias 'khalel-update-upcoming-events-after-capture
+  'khalel-import-events-after-capture "0.1.8")
+
+(defcustom khalel-import-events-after-capture 't
   "Whether to automatically update the imported events after a new capture."
   :group 'khalel
   :type 'boolean)
 
+(make-obsolete-variable 'khalel-import-time-delta
+                        "The import range is now controlled via start \
+and end dates set\
+via `khalel-import-start-date' and `khalel-import-end-date',\
+respectively" "0.1.8")
 
 ;;;; Commands
+
+(make-obsolete 'khalel-import-upcoming-events 'khalel-import-events "0.1.8")
 
 (defun khalel-import-events ()
   "Imports calendar entries by calling khal externally.
@@ -437,7 +447,7 @@ To be added as hook to `org-capture-before-finalize-hook'."
             (org-capture-put :kill-buffer nil)
             (org-capture-put :return-to-wconf (current-window-configuration)))
         (when
-            khalel-update-upcoming-events-after-capture
+            khalel-import-events-after-capture
           (khalel-import-events))))))
 
 (defun khalel--sanitize-ics (ics)
@@ -489,7 +499,10 @@ Return a plist with details of problems or nil if no issues were found."
   "Insert imported events file header information into current buffer."
   (when khalel-import-org-file-read-only
     (insert "# -*- buffer-read-only: 1; -*-\n"))
-  (insert khalel-import-org-file-header))
+  (insert khalel-import-org-file-header)
+  (insert (format "/Events scheduled between %s and %s/:"
+                  khalel-import-start-date
+                  khalel-import-end-date)))
 
 (defun khalel--make-temp-window (buf height)
   "Create a temporary window with HEIGHT at the frame bottom displaying buffer BUF."
