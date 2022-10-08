@@ -1,31 +1,40 @@
-#+TITLE: =khalel= changelog
+#+TITLE: =khalel= changelog and news
 
 Below are the summarized changes made in each version:
 
 * v0.1.8
-- ignore temporary capture files when storing org id locations.
+- Allow to include past events in the import date range:
+  - Modify the range by setting new variables ~khalel-import-start-date~ and
+    ~khalel-import-end-date~ which support the same format as ~org-read-date~.
+  - The previous date range variable ~khalel-import-time-delta~ has been
+    deprecated.
+  - As not only /upcoming/ events are supported, the following functions and
+    variables have been renamed and their previous aliases marked deprecated:
+    - ~khalel-import-upcoming-events~ → ~khalel-import-events~
+    - ~khalel-update-upcoming-events-after-capture~ → ~khalel-import-events-after-capture~
+- Ignore temporary capture files when storing org id locations.
 * v0.1.7
-- adds variable for =khal= configuration file location: =khalel-khal-config=.
+- Adds variable for =khal= configuration file location: =khalel-khal-config=.
   The default is =nil= which uses =khal='s default location.
-- adds configurable format for import of events: =khal-import-format=.
-- it is now possible to limit the import of events to only the default calendar
+- Adds configurable format for import of events: =khal-import-format=.
+- It is now possible to limit the import of events to only the default calendar
   by calling =khal-import-upcoming-events= with a prefix argument.
-- the header of the org file with imported events can be changed through the
-  variable =khalel-import-org-file-header=
-- allows editing events scheduled in the past
+- The header of the org file with imported events can be changed through the
+  variable =khalel-import-org-file-header=.
+- Allows editing events scheduled in the past.
 * v0.1.6
-- improves error handling on import and capture
-- add (rudimentary) verification of ics export results
-- adds auto-update of upcoming events on capture
+- Improves error handling on import and capture.
+- Add (rudimentary) verification of ics export results.
+- Adds auto-update of upcoming events on capture:
   - can be disabled via =khalel-update-upcoming-events-after-capture=
-- improves handling of temporary buffers during capture
+- Improves handling of temporary buffers during capture:
   - no switching to temporary buffer except in case of error
   - kill temporary buffer after capture when successful or aborted
-- extends README with troubleshooting section
+- extends README with troubleshooting section.
 * v0.1.5
-- improves handling of repeating events
-- puts content of imported events into list format
-- fix handling of multi-line locations
-- reverts imported calendar buffer after update
+- Improves handling of repeating events.
+- Puts content of imported events into list format.
+- Fix handling of multi-line locations.
+- Reverts imported calendar buffer after update.
 * v0.1.4
-- initial release (on MELPA)
+- Initial release (on MELPA)
