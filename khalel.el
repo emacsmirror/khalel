@@ -210,7 +210,7 @@ alarms or settings for repeating events."
        (khal-cal (when current-prefix-arg (format "-a%s" khalel-default-calendar)))
        (dst (generate-new-buffer "*khal-output*"))
        (err (get-buffer-create "*khal-errors*"))
-       (errfn (make-temp-file "khalel-khal-errors"))
+       (errfn (make-temp-file "khalel-khal-errors-"))
        ;; determine arguments for khal call
        (args
         (remq nil  ;; remove nil elements
@@ -359,7 +359,10 @@ and immediately exported to khal."
 :CATEGORY: event\n:LOCATION: \n\
 :APPT_WARNTIME: " khalel-default-alarm "\n:END:\n" )))
   (add-hook 'org-capture-before-finalize-hook
-            #'khalel--capture-finalize-calendar-export))
+            #'khalel--capture-finalize-calendar-export)
+  ;; do not store the ids in `org-id-locations-file'
+  (advice-add 'org-id-add-location
+              :around #'khalel--ignore-khal-captures-in-org-id-locations-file-a))
 
 
 (defun khalel-run-vdirsyncer ()
@@ -405,10 +408,20 @@ Works on imported events and used their ID to search for the
 ;;;; Functions
 (defun khalel--make-temp-file ()
   "Create and visit a temporary file for capturing and exporting events."
-  (set-buffer (find-file-noselect (make-temp-file "khalel-capture" nil ".org")))
+  (set-buffer (find-file-noselect (make-temp-file "khalel-capture-" nil "-tmp.org")))
   ;; mark buffer as new and appropriate to kill after capture process.
   (org-capture-put :new-buffer t)
   (org-capture-put :kill-buffer t))
+
+(defun khalel--ignore-khal-captures-in-org-id-locations-file-a (fn &rest args)
+  "Ignore khalel capture files when storing ids in the database of id locations.
+FN is `org-id-add-location' that comes from advice and ARGS are
+passed to it."
+  (let ((file (cadr args)))
+  (when (not
+         (string-match-p "khalel-capture-.*-tmp\\.org"
+                         (file-name-nondirectory file)))
+         (apply fn args))))
 
 (defun khalel--capture-finalize-calendar-export ()
   "Export current event capture.
