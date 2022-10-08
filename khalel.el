@@ -265,7 +265,7 @@ alarms or settings for repeating events."
           ;; org-agenda. Filter these duplicates out here.
           (let ((content (khalel--get-buffer-content-list)))
             (with-temp-buffer
-              (khalel--insert-import-file-header)
+              (khalel--insert-import-file-header khal-start khal-end)
               (insert
                (mapconcat 'identity
                           (delete-dups content)
@@ -495,14 +495,15 @@ Return a plist with details of problems or nil if no issues were found."
           (push content content-list ))))
     (nreverse content-list)))
 
-(defun khalel--insert-import-file-header ()
-  "Insert imported events file header information into current buffer."
+(defun khalel--insert-import-file-header (sdate edate)
+  "Insert imported events file header information into current buffer.
+SDATE and EDATE denote the start and end dates, respectively, of
+the current import date range."
   (when khalel-import-org-file-read-only
     (insert "# -*- buffer-read-only: 1; -*-\n"))
   (insert khalel-import-org-file-header)
-  (insert (format "/Events scheduled between %s and %s/:"
-                  khalel-import-start-date
-                  khalel-import-end-date)))
+  (insert (format "*Events scheduled between %s and %s*:\n" sdate edate))
+  (insert (format "/(Last import: %s)/\n\n" (current-time-string))))
 
 (defun khalel--make-temp-window (buf height)
   "Create a temporary window with HEIGHT at the frame bottom displaying buffer BUF."
