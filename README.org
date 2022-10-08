@@ -55,9 +55,10 @@ existing events is possible through a console-interface to =khal=.
 * Use case
 
 I sync my remote CalDAV calendars using [[https://github.com/pimutils/vdirsyncer][vdirsyncer]] which mirrors all events from
-my locally. This calendar store can be accessed through =khal= and =khalel=. I
-am mostly interested in seeing upcoming events in the org-mode agenda and to
-quickly create new events with the familiar org-capture mechanism.
+my different calendars locally. This calendar store can be accessed through
+=khal= and =khalel=. I am mostly interested in seeing upcoming events in the
+org-mode agenda and to quickly create new events with the familiar org-capture
+mechanism.
 
 This requires a small chain of steps: most notably, in my setup, events created
 through =khalel= require an additional import step to be visible in org-mode.
