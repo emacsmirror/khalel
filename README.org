@@ -162,7 +162,29 @@ The weekday's short form will appear in your configured local language.
 You might want to set up a default calendar as well or do that in the =khalel= configuration step below.
 
 ** Install =khalel=
-The source code can be found at [[https://gitlab.com/hperrey/khalel]]
+The package is available from MELPA: [[https://melpa.org/#/khalel][file:https://melpa.org/packages/khalel-badge.svg]]
+
+Install it through =package-install=.
+
+Alternatively, you can download the source code from [[https://gitlab.com/hperrey/khalel]]
+
+To load the package, I recommend [[https://github.com/jwiegley/use-package][use-package]].
+*** Doom Emacs
+If you are using [[Https://github.com/hlissner/doom-emacs/][Doom Emacs]], you can install and load =khalel= by adding
+#+begin_src emacs-lisp
+(package! khalel)
+#+end_src
+to your =packages.el= and
+#+begin_src emacs-lisp
+(use-package! khalel
+  :commands (khalel-export-org-subtree-to-calendar
+             khalel-import-events
+             khalel-edit-calender-event
+             khalel-add-capture-template
+             ))
+#+end_src
+to your =config.el=. Then execute =./doom sync= in the =~/.emacs.d/bin/=
+directory to trigger the download of the package.
 
 ** Configuring =khalel=
 First, make sure that the right =khal= and =vdirsyncer= executables will be used, e.g.
@@ -175,7 +197,7 @@ You might want to customize the values for default calendar, capture template ke
 #+begin_src emacs-lisp
 (setq khalel-default-calendar "privat")
 (setq khalel-capture-key "e")
-(setq khalel-import-org-file (concat org-directory "calendar.org"))
+(setq khalel-import-org-file (concat org-directory "/" "calendar.org"))
 #+end_src
 
  =calendar.org= is also in my list of agenda files. There the new events will end up in after the next sync.
@@ -190,21 +212,22 @@ You might want to customize the values for default calendar, capture template ke
 
 And I never plan too long into the future, so the next 30 days will be more than enough to fill my agenda view:
 #+begin_src emacs-lisp
-(setq khalel-import-time-delta "30d")
+(setq khalel-import-end-date "+30d")
 #+end_src
+In the same manner, you can set a start date by changing the value of ~khalel-import-start-date~ which defaults to "today". Both variables accept the format supported by ~org-read-date~.
 
 Using these settings, we can now set up a capture template using a helper routine:
 #+begin_src emacs-lisp
 (khalel-add-capture-template)
 #+end_src
-Put this into your Emacs configuration file. The above command will also
+Put this call into your Emacs configuration file. The above command will also
 register an export hook that is run when the capture is finalized to trigger the
 export to =khal=.
 
 ** First steps
-You can import upcoming events through =khalel-import-upcoming-events= or create
-new ones through =org-capture= and pressing =e= (default key) for a new calendar
-event.
+You can import current events matching the defined date range through
+=khalel-import-events= or create new ones through =org-capture= and pressing =e=
+(default key) for a new calendar event.
 
 You might want to consider adding the org file with the imported events
 (=calendar.org= in the above example) to your org agenda.
@@ -242,25 +265,25 @@ repeats:
 
 For each of the timestamps in the bottom, additional events (with unique IDs) will be created through the ics export. Please not that using actual (sub) headings would create events with different descriptions. Also, the "SCHEDULED" for the main event is expected to be always present, even when further events are added as part of the description.
 ** Limiting import to a single calendar
-If you call =khal-import-upcoming-events= with a prefix argument (e.g. =C-u=), the import will be limited to the default calendar defined in =khal-default-calendar=.
+If you call =khal-import-events= with a prefix argument (e.g. =C-u=), the import will be limited to the default calendar defined in =khal-default-calendar=.
 ** Importing calendars into separate =org= files
 If you have several calendars that you would like to import into separate =org= files, you can define your own import routines like this:
 #+begin_src emacs-lisp
-(defun hanno/import-upcoming-work-events ()
-  "Import only work events via `khalel-import-upcoming-events`."
+(defun hanno/import-current-work-events ()
+  "Import only work events via `khalel-import-events`."
   (interactive)
   (let ((current-prefix-arg '(4))
     (khalel-default-calendar "work")
     (khalel-import-org-file (concat org-directory "work-events.org")))
-      (call-interactively #'khalel-import-upcoming-events)))
+      (call-interactively #'khalel-import-events)))
 #+end_src
 This limits the import to a single calendar =work= and stores it in the file
 =work-events.org=. Consider to also modify =khalel-import-org-file-header= and
 =khalel-import-format= to make them reflect your customization.
 
 * Troubleshooting
-** Getting warning message =Ignoring unsafe file local variable: buffer-read-only= when running =khalel-import-upcoming-events=
-The =calendar.org= file in which the upcoming events are imported into, is set
+** Getting warning message =Ignoring unsafe file local variable: buffer-read-only= when running =khalel-import-events=
+The =calendar.org= file in which the current events are imported into, is set
 to =read-only-mode= as any changes to this file would be overwritten by the next
 import. This is done via so-called "file local variables" which, by default, are
 ignored by Emacs until they are marked "safe" by the user.
@@ -272,7 +295,7 @@ To mark this particular variable as safe, set the variable
    (quote
     ((buffer-read-only . 1))))
 #+end_src
-** The file with imported events is empty/contains no scheduled items after running =khal-import-upcoming-events=
+** The file with imported events is empty/contains no scheduled items after running =khal-import-events=
 This can have a number of reasons. First check your =khal= installation by running in the terminal:
 #+begin_src sh
 khal list today 30d
@@ -285,6 +308,9 @@ month.
 In case you do get output from the above command but the file =khalel= imports
 into is still empty, please check your =*Messages*= buffer for error messages
 and continue in the corresponding section.
+
+Also check that you have set ~khalel-import-start-date~ and
+~khalel-import-end-date~ to appropriate values.
 
 ** =Searching for program: No such file or directory, khal=
 This indicates that =khal= could not be found. Run
@@ -309,5 +335,15 @@ See the above section on =khal= installation for the version requirements.
 Should a later version than the above mentioned cause any errors, then please
 report this problem and include the version of =khal= and the contents of the
 =*khal-errors*= buffer.
+** =khal= gives =PytzUsageWarning= messages
+This might be a [[https://github.com/pimutils/khal/issues/1092][known issue (#1092)]] in =khal=. One approach is to downgrade to
+an earlier version of =tzlocal=:
+#+begin_src sh
+sudo pip install tzlocal==2
+#+end_src
+
+Other options are discussed in the linked issue tracker in case this downgrade
+is not suitable for you.
+
 * Reporting issues
 Please open an issue on [[https://gitlab.com/hperrey/khalel/-/issues][gitlab]] (preferred) or write an [[mailto:khalel-issues@hoowl.se][email]].
