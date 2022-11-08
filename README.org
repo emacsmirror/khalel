@@ -304,6 +304,14 @@ If you want to customize the khalel template, e.g. if you want the scheduled dat
 #+end_src
 
 You can also change the variable =khalel-import-org-file-header= if you want to change the header of the generated file (e.g. if you want to add a file tag or something like that).
+** Integration into mail readers for handling invitations :EXPERIMENTAL:
+If you are using either =gnus= or =mu4e= to read mails in Emacs, then there is
+now (rudimentary) support for handling iCalendar event invitations. Much of the
+functionality is provided by =gnus-icalendar= which will show a summary of the
+event and buttons to /accept/ or /decline/ the event. =khalel= taps into this to
+add two buttons into any mail with an invitation: /Show Agenda/ and /khal
+import/. The former simply shows the Org mode agenda for the day the event is
+scheduled while the latter extracts the event and imports it via =khal import=.
 
 * Troubleshooting
 ** Getting warning message =Ignoring unsafe file local variable: buffer-read-only= when running =khalel-import-events=
