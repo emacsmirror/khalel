@@ -195,6 +195,11 @@ and end dates set\
 via `khalel-import-start-date' and `khalel-import-end-date',\
 respectively" "0.1.8")
 
+(defvar khalel--khal-calendar-list nil
+  "List of `khal' calendars known to khalel.\
+
+Updated via `khalel-refresh-khal-calendar-list'.")
+
 ;;;; Commands
 
 (make-obsolete 'khalel-import-upcoming-events 'khalel-import-events "0.1.8")
@@ -426,7 +431,29 @@ Works on imported events and used their ID to search for the
           (pop-to-buffer buf))
       (message "khalel: could not find ID associated with current entry."))))
 
+(defun khalel-refresh-khal-calendar-list ()
+  "Update list of known calendars via call to `khal printcalendars'."
+  (interactive)
+  (save-excursion
+    (with-temp-buffer
+      (apply #'call-process
+             `(,(or khalel-khal-command
+                   (executable-find "khal"))
+               nil t nil
+               ,@(when khalel-khal-config `("-c" ,khalel-khal-config))
+               "printcalendars"))
+      (setq khalel--khal-calendar-list
+            (split-string (buffer-substring (point-min) (point-max))))))
+  khalel--khal-calendar-list)
+
 ;;;; Functions
+(defun khalel--ask-for-calendar()
+  "Ask the user to select a khal calendar."
+  (completing-read "Select a calendar: "
+                 (or khalel--khal-calendar-list
+                     (khalel-refresh-khal-calendar-list))
+                 nil 'confirm))
+
 (defun khalel--make-temp-file ()
   "Create and visit a temporary file for capturing and exporting events."
   (set-buffer (find-file-noselect (make-temp-file "khalel-capture-" nil "-tmp.org")))
