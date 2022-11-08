@@ -38,7 +38,7 @@
 ;;  First steps/quick start:
 ;;  - install, configure and run vdirsyncer
 ;;  - install and configure khal
-;;  - customize the values for default calendar, capture file and import file for khalel
+;;  - customize the values for capture file and import file for khalel
 ;;  - call `khalel-add-capture-template' to set up a capture template
 ;;  - import events through `khalel-import-events',
 ;;    edit them through `khalel-edit-calendar-event' or create new ones through `org-capture'
@@ -77,12 +77,12 @@ When set to nil then the default location
   :group 'khalel-advanced
   :type 'string)
 
-(defcustom khalel-default-calendar "private"
+(defcustom khalel-default-calendar nil
   "The khal calendar to import into by default.
 
 The calendar for a new event can be modified during the capture
-process. Set to nil to use the default calendar configured for
-khal instead."
+process. Set to nil to get a prompt for one of the khal calendars
+instead."
   :group 'khalel
   :type 'string)
 
@@ -217,7 +217,9 @@ file is configured to be read-only. This can be adjusted by
 configuring `khalel-import-org-file-read-only'.
 
 When a prefix argument is given, the import will be limited to
-the calendar `khalel-default-calendar'.
+the calendar `khalel-default-calendar'. If this is nil then the
+user is asked to specify a calendar to limit the export to
+instead.
 
 Please note that the resulting org file does not necessarily
 include all information contained in the .ics files it is based
@@ -230,8 +232,12 @@ alarms or settings for repeating events."
       ( ;; call khal directly.
        (khal-bin (or khalel-khal-command
                      (executable-find "khal")))
-       (khal-cfg (when khalel-khal-config (format "-c %s" khalel-khal-config)))
-       (khal-cal (when current-prefix-arg (format "-a%s" khalel-default-calendar)))
+       (khal-cfg (when khalel-khal-config
+                   (format "-c %s" khalel-khal-config)))
+       (khal-cal (when current-prefix-arg
+                   (format "-a%s"
+                           (or khalel-default-calendar
+                               (khalel--ask-for-calendar)))))
        (khal-start (org-read-date nil nil khalel-import-start-date))
        (khal-end (org-read-date nil nil khalel-import-end-date))
        (dst (generate-new-buffer "*khal-output*"))
@@ -317,7 +323,8 @@ Return t on success and nil otherwise."
          (entriescal (org-entry-get nil "calendar"))
          (calendar (or
                     (when (and entriescal (string-match "[^[:blank:]]" entriescal)) entriescal)
-                    khalel-default-calendar))
+                    khalel-default-calendar
+                    (khalel--ask-for-calendar)))
          ;; export to ics
          (ics (khalel--sanitize-ics
                (org-icalendar-export-to-ics nil nil 't)))

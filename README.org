@@ -194,9 +194,8 @@ First, make sure that the right =khal= and =vdirsyncer= executables will be used
 (setq khalel-vdirsyncer-command "vdirsyncer")
 #+end_src
 
-You might want to customize the values for default calendar, capture template key and import file for khalel:
+You might want to customize the values for capture template key and import file for khalel:
 #+begin_src emacs-lisp
-(setq khalel-default-calendar "privat")
 (setq khalel-capture-key "e")
 (setq khalel-import-org-file (concat org-directory "/" "calendar.org"))
 #+end_src
@@ -265,7 +264,13 @@ repeats:
 #+end_example
 
 For each of the timestamps in the bottom, additional events (with unique IDs) will be created through the ics export. Please not that using actual (sub) headings would create events with different descriptions. Also, the "SCHEDULED" for the main event is expected to be always present, even when further events are added as part of the description.
-** Limiting import to a single calendar
+** Default calendar
+If you are usually only importing into a single calendar, then you can define this as a default calendar:
+#+begin_src emacs-lisp
+(setq khalel-default-calendar "privat")
+#+end_src
+This will replace any dialog asking for a calendar to save captures into.
+** Limiting import of events from a single calendar
 If you call =khal-import-events= with a prefix argument (e.g. =C-u=), the import will be limited to the default calendar defined in =khal-default-calendar=.
 ** Importing calendars into separate =org= files
 If you have several calendars that you would like to import into separate =org= files, you can define your own import routines like this:
