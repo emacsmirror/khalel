@@ -1,0 +1,39 @@
+#+title: =khalel= development notes
+
+* Issues and improvements to =khalel=
+** PROJ improve handling of invitations
+*** DONE implement support for importing invitations
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-11-08 Tue 15:16]
+:END:
+
+**** DONE investigate direct import of ics into khal from gnus/mu4e-view
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-11-08 Tue 15:14]
+:END:
+
+**** DONE look into adding a button to gnus-view to make import easier
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2022-11-08 Tue 15:14]
+:END:
+
+*** TODO implement support for creating invitations
+- khal has an ics export feature (but not via CLI). See khal issues below.
+*** TODO implement support for answering invitations
+- could gnus-icalendar handle this?
+** TODO Search for both UID and date when editing events via =khal=
+- would allow to edit events in a series once that is possible via the interactive =edit= command of =khal=
+* Tracking =khal= issues relevant for =khalel=
+** Output-related (=khal= → Org mode)
+- [[https://github.com/pimutils/khal/issues/1025][khal list output format difficult for other programs to parse #1025]]
+  - work towards JSON output (with more fields); could be easier to parse
+** Export to iCalendar/ics (e.g. for creating invitations)
+- [[https://github.com/pimutils/khal/issues/892][Exporting event by UID #892]]
+- [[https://github.com/pimutils/khal/issues/132][View and Respond to .ics attachments (RFC 5546 support) #132]]
+- [[https://github.com/pimutils/khal/issues/627][[FR] support organizer & attendees fields #627]]
+** Handling of reoccurring events
+- [[https://github.com/pimutils/khal/pull/1143][[WIP] Better support for recurrence instances #1143]]
+- [[https://github.com/pimutils/khal/issues/999][custom recurrence support for the CLI #999]]
+** API
+- [[https://github.com/pimutils/khal/issues/1089][API]]
+  - here: from Python
