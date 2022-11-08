@@ -315,8 +315,6 @@ Return t on success and nil otherwise."
         ((org-icalendar-store-UID 't)
          ;; create events from non-TODO entries with scheduled time
          (org-icalendar-use-scheduled '(event-if-not-todo))
-         (khal-bin (or khalel-khal-command
-                       (executable-find "khal")))
          (capturefn (buffer-file-name
                  (buffer-base-buffer)))
          (path (file-name-directory capturefn))
@@ -328,28 +326,10 @@ Return t on success and nil otherwise."
          ;; export to ics
          (ics (khalel--sanitize-ics
                (org-icalendar-export-to-ics nil nil 't)))
-         (khal-cfg (when khalel-khal-config (format "-c %s" khalel-khal-config)))
-         ;; determine args to khal
-         (args
-          (remq nil ;; remove nil elements
-                `(,khal-cfg
-                  "import"
-                  ,(when calendar
-                     (format "-a%s" calendar))
-                  "--batch"
-                  ,(concat path ics))))
          ;; call khal import only if ics verification succeeds
          (import
           (or (khalel--verify-exported-ics ics)
-              (with-temp-buffer
-                (list
-                 :process khal-bin
-                 :exit-status
-                 (apply 'call-process
-                        khal-bin nil t nil
-                        args)
-                 :output
-                 (buffer-string))))))
+              (khalel--khal-import calendar (concat path ics)))))
       (widen)
       (let ((exitstat (plist-get import :exit-status)))
         (when
@@ -454,6 +434,27 @@ Works on imported events and used their ID to search for the
   khalel--khal-calendar-list)
 
 ;;;; Functions
+(defun khalel--khal-import (cal ics)
+  "Call `khal' with `import' command to import ICS file into calendar CAL."
+  (let ((khal-bin (or khalel-khal-command
+                       (executable-find "khal"))))
+  (with-temp-buffer
+                (list
+                 :process khal-bin
+                 :exit-status
+                 (apply 'call-process
+                        `(,khal-bin
+                          nil t nil
+                          ,@(when khalel-khal-config
+                              `("-c" ,khalel-khal-config))
+                          "import"
+                          ,@(when cal
+                              (list (format "-a%s" cal)))
+                          "--batch"
+                          ,ics))
+                 :output
+                 (buffer-string)))))
+
 (defun khalel--ask-for-calendar()
   "Ask the user to select a khal calendar."
   (completing-read "Select a calendar: "
