@@ -109,7 +109,8 @@ Besides calendars, this setup can be extended to contacts using:
 - [[https://github.com/pimutils/vdirsyncer][vdirsyncer]] (again) to mirror contacts from CardDAV server locally,
 - [[https://github.com/scheibler/khard][khard]] to access them via the command line, and
 - [[https://github.com/DamienCassou/khardel][khardel]] for integration into Emacs (not by me).
-
+** Similar packages
+- [[https://github.com/dengste/org-caldav][org-caldav]] :: Focuses on synchronizing Org mode files /to/ CalDAV servers where =khalel= mostly imports to and creates events from Org mode. Allows to use more Org mode features but some information might not be transferred to CalDAV. Employs synchronization code running in Emacs instead of using external tools. *Note*: /currently missing maintainer/, see https://github.com/dengste/org-caldav/issues/234
 * Getting started
 ** Installing and configuring =vdirsyncer=
 Follow the installation instructions at [[https://github.com/pimutils/vdirsyncer]].
