@@ -7,6 +7,7 @@ Below are the summarized changes made in each version:
 - If no default calendar is specified on import, =khalel= will offer a prompt to
   pick one. The new default value for ~khalel-default-calendar~ is now =nil= and
   therefore the prompt.
+- Fixes handling of  =khalel-khal-config=, see [[https://gitlab.com/hperrey/khalel/-/issues/9][issue #9]].
 * v0.1.8
 - Allow to include past events in the import date range:
   - Modify the range by setting new variables ~khalel-import-start-date~ and

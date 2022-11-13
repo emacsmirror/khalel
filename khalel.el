@@ -233,7 +233,7 @@ alarms or settings for repeating events."
        (khal-bin (or khalel-khal-command
                      (executable-find "khal")))
        (khal-cfg (when khalel-khal-config
-                   (format "-c %s" khalel-khal-config)))
+                   `("-c" ,khalel-khal-config)))
        (khal-cal (when current-prefix-arg
                    (format "-a%s"
                            (or khalel-default-calendar
