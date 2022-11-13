@@ -19,8 +19,9 @@
 
 *** TODO implement support for creating invitations
 - khal has an ics export feature (but not via CLI). See khal issues below.
-*** TODO implement support for answering invitations
-- could gnus-icalendar handle this?
+**** TODO add fields for ORGANIZER, ATTENDEE etc fields
+**** TODO create invitation mail
+*** TODO find and document support for answering invitations
 ** TODO Search for both UID and date when editing events via =khal=
 - would allow to edit events in a series once that is possible via the interactive =edit= command of =khal=
 * Tracking =khal= issues relevant for =khalel=
