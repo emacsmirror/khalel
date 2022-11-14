@@ -621,7 +621,7 @@ the current import date range."
    buttons
    (list
    `("Show Agenda" gnus-icalendar-show-org-agenda ,event)
-   `("khal import" khalel-gnus-import-invite ,handle)))))
+   `("khal import" khalel--gnus-import-invite ,handle)))))
 
 (advice-remove 'gnus-icalendar-event:inline-reply-buttons #'khalel--inject-gnus-inline-buttons)
 (advice-add 'gnus-icalendar-event:inline-reply-buttons :around #'khalel--inject-gnus-inline-buttons)
