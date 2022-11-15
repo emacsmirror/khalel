@@ -608,7 +608,11 @@ the current import date range."
                  exitstat)))
               (insert "\n" (plist-get import :output) "\n")
               (special-mode)))
-        (message (format "Imported event into calendar '%s'" cal))
+        (progn
+          (when
+              khalel-import-events-after-capture
+            (khalel-import-events))
+          (message (format "Imported event into calendar '%s'" cal)))
         (zerop exitstat)))))
 
 (defun khalel--inject-gnus-inline-buttons (orig-fun &rest args)
