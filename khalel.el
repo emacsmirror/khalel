@@ -198,7 +198,8 @@ respectively" "0.1.8")
 (defvar khalel--khal-calendar-list nil
   "List of `khal' calendars known to khalel.\
 
-Updated via `khalel-refresh-khal-calendar-list'.")
+Caches output of 'khal printcalendars' and updated via
+`khalel-refresh-khal-calendar-list'.")
 
 ;;;; Commands
 
@@ -236,8 +237,7 @@ alarms or settings for repeating events."
                    `("-c" ,khalel-khal-config)))
        (khal-cal (when current-prefix-arg
                    (format "-a%s"
-                           (or khalel-default-calendar
-                               (khalel--ask-for-calendar)))))
+                           (khalel--get-calendar))))
        (khal-start (org-read-date nil nil khalel-import-start-date))
        (khal-end (org-read-date nil nil khalel-import-end-date))
        (dst (generate-new-buffer "*khal-output*"))
@@ -321,8 +321,7 @@ Return t on success and nil otherwise."
          (entriescal (org-entry-get nil "calendar"))
          (calendar (or
                     (when (and entriescal (string-match "[^[:blank:]]" entriescal)) entriescal)
-                    khalel-default-calendar
-                    (khalel--ask-for-calendar)))
+                    (khalel--get-calendar)))
          ;; export to ics
          (ics (khalel--sanitize-ics
                (org-icalendar-export-to-ics nil nil 't)))
@@ -454,6 +453,23 @@ Works on imported events and used their ID to search for the
                           ,ics))
                  :output
                  (buffer-string)))))
+
+(defun khalel--get-calendar()
+  "Returns a 'khal' calendar.
+
+This is either the default calendar set via
+`khalel-default-calendar' or one of the ones available through
+'khal'."
+  ;; refresh cached list if needed
+  (unless khalel--khal-calendar-list
+    (khalel-refresh-khal-calendar-list))
+  (or khalel-default-calendar
+      ;; if only one calendar is known, take that
+      (when (eql 1 (length khalel--khal-calendar-list))
+        (car khalel--khal-calendar-list))
+      ;; ask user to pick
+      (khalel--ask-for-calendar)))
+
 
 (defun khalel--ask-for-calendar()
   "Ask the user to select a khal calendar."
@@ -588,8 +604,7 @@ the current import date range."
 (defun khalel--gnus-import-invite (handle)
   "Decode HANDLE of an invitation from `gnus-icalendar' and import to `khal'."
   (let ((fn (make-temp-file "khalel-mm-invite-"))
-        (cal (or khalel-default-calendar
-                 (khalel--ask-for-calendar))))
+        (cal (khalel--get-calendar)))
     ;; extract ics from handle
     (gnus-icalendar-with-decoded-handle handle (write-file fn))
     (let* ((import (khalel--khal-import cal fn))
