@@ -600,14 +600,14 @@ the current import date range."
 ;;;; by advice around functions setting up buttons in `gnus-view' to
 ;;;; handle iCalendar invitations via mail. Works in `mu4e-view' too.
 
-(declare-function gnus-icalendar-with-decoded-handle "gnus-icalendar")
-
 (defun khalel--gnus-import-invite (handle)
   "Decode HANDLE of an invitation from `gnus-icalendar' and import to `khal'."
   (let ((fn (make-temp-file "khalel-mm-invite-"))
         (cal (khalel--get-calendar)))
     ;; extract ics from handle
-    (gnus-icalendar-with-decoded-handle handle (write-file fn))
+    (if (fboundp 'gnus-icalendar-with-decoded-handle)
+         (gnus-icalendar-with-decoded-handle handle (write-file fn))
+       (message "khalel iCal import error: gnus-icalendar not loaded!"))
     (let* ((import (khalel--khal-import cal fn))
            (exitstat (plist-get import :exit-status)))
       (if (/= 0 exitstat)
