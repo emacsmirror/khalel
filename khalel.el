@@ -595,59 +595,6 @@ the current import date range."
         (kill-buffer buf)))))
 
 
-;;;; `gnus-icalendar' integration
-;;;; The functions below require `gnus-icalendar' and will be activated
-;;;; by advice around functions setting up buttons in `gnus-view' to
-;;;; handle iCalendar invitations via mail. Works in `mu4e-view' too.
-
-(defun khalel--gnus-import-invite (handle)
-  "Decode HANDLE of an invitation from `gnus-icalendar' and import to `khal'."
-  (let ((fn (make-temp-file "khalel-mm-invite-"))
-        (cal (khalel--get-calendar)))
-    ;; extract ics from handle
-    (if (fboundp 'gnus-icalendar-with-decoded-handle)
-         (gnus-icalendar-with-decoded-handle handle (write-file fn))
-       (message "khalel iCal import error: gnus-icalendar not loaded!"))
-    (let* ((import (khalel--khal-import cal fn))
-           (exitstat (plist-get import :exit-status)))
-      (if (/= 0 exitstat)
-          (let ((buf (generate-new-buffer "*khalel-import-errors*")))
-            (khalel--make-temp-window buf 16)
-            (with-current-buffer buf
-              (insert
-               (message
-                (format
-                 "%s failed on import of %s for calendar '%s' and exited with status %d\n"
-                 (plist-get import :process)
-                 fn
-                 cal
-                 exitstat)))
-              (insert "\n" (plist-get import :output) "\n")
-              (special-mode)))
-        (progn
-          (when
-              khalel-import-events-after-capture
-            (khalel-import-events))
-          (message (format "Imported event into calendar '%s'" cal)))
-        (zerop exitstat)))))
-
-(defun khalel--inject-gnus-inline-buttons (orig-fun &rest args)
-  "Advice ORIG-FUN called with ARGS to add `khalel' buttons to `gnus-icalendar'."
-  (let*
-      ((handle (cadr args))
-      (event (car args))
-       (buttons (apply orig-fun args)))
-  (append
-   buttons
-   (list
-   `("Show Agenda" gnus-icalendar-show-org-agenda ,event)
-   `("khal import" khalel--gnus-import-invite ,handle)))))
-
-(advice-remove 'gnus-icalendar-event:inline-reply-buttons #'khalel--inject-gnus-inline-buttons)
-(advice-add 'gnus-icalendar-event:inline-reply-buttons :around #'khalel--inject-gnus-inline-buttons)
-
-
-
 ;;;; Footer
 (provide 'khalel)
 ;;; khalel.el ends here

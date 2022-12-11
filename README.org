@@ -314,9 +314,13 @@ add two buttons into any mail with an invitation: /Show Agenda/ and /khal
 import/. The former simply shows the Org mode agenda for the day the event is
 scheduled while the latter extracts the event and imports it via =khal import=.
 
-If you are using =mu4e=, you can find more information on the configuration here: https://www.djcbsoftware.nl/code/mu/mu4e/iCalendar.html
+- If you are using =mu4e=, you can find more information on the configuration here: https://www.djcbsoftware.nl/code/mu/mu4e/iCalendar.html
+- For =gnus=, look into the documentation for =gnus-icalendar=.
 
-For =gnus=, look into the documentation for =gnus-icalendar=.
+After loading and setting up either of the above, the =khal= integration can be enabled by
+#+begin_src emacs-lisp
+(require 'khalel-icalendar)
+#+end_src
 
 * Troubleshooting
 ** Getting warning message =Ignoring unsafe file local variable: buffer-read-only= when running =khalel-import-events=
