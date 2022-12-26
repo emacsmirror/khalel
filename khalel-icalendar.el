@@ -67,8 +67,8 @@
    `("Show Agenda" gnus-icalendar-show-org-agenda ,event)
    `("khal import" khalel-icalendar--gnus-import-invite ,handle)))))
 
-(advice-remove 'gnus-icalendar-event:inline-reply-buttons #'khalel--inject-gnus-inline-buttons)
-(advice-add 'gnus-icalendar-event:inline-reply-buttons :around #'khalel--inject-gnus-inline-buttons)
+(advice-remove 'gnus-icalendar-event:inline-reply-buttons #'khalel-icalendar--inject-gnus-inline-buttons)
+(advice-add 'gnus-icalendar-event:inline-reply-buttons :around #'khalel-icalendar--inject-gnus-inline-buttons)
 
 
 (provide 'khalel-icalendar)
