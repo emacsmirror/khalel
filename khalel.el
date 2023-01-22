@@ -456,7 +456,7 @@ Works on imported events and used their ID to search for the
                  (buffer-string)))))
 
 (defun khalel--get-calendar()
-  "Returns a 'khal' calendar.
+  "Return a 'khal' calendar.
 
 This is either the default calendar set via
 `khalel-default-calendar' or one of the ones available through
