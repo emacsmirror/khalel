@@ -1,5 +1,11 @@
 #+title: =khalel= development notes
 
+*Note*: This document collects some loose notes that might be useful for the
+further development of =khalel=. This is, however, not (yet) a road-map or
+reflects the priority of any of the mentioned features. If you are interested in
+either contributing code or discussing specific functionality, please get in
+touch either via opening an issue on [[https://gitlab.com/hperrey/khalel/-/issues][gitlab]] or writing an [[mailto:hanno@hoowl.se][email]].
+
 * Issues and improvements to =khalel=
 ** PROJ improve handling of invitations
 *** DONE implement support for importing invitations

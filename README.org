@@ -387,4 +387,4 @@ Other options are discussed in the linked issue tracker in case this downgrade
 is not suitable for you.
 
 * Reporting issues
-Please open an issue on [[https://gitlab.com/hperrey/khalel/-/issues][gitlab]] (preferred) or write an [[mailto:khalel-issues@hoowl.se][email]].
+Please open an issue on [[https://gitlab.com/hperrey/khalel/-/issues][gitlab]] (preferred) or write an [[mailto:hanno@hoowl.se][email]].
