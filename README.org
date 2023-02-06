@@ -241,13 +241,16 @@ To synchronize new, edited or remote events use either the links in the imported
 calendar org file or call =khalel-run-vdirsyncer=.
 * Tips and tricks
 ** Creating repeating events
-When capturing new events, you can create simple repeating patterns using the org timestamp syntax with repeater intervals. For example,
+When capturing new events, you can create simple repeating patterns using the
+org timestamp syntax with repeater intervals. For example,
 #+begin_example
 SCHEDULED: <2021-12-07 tis +1w>
 #+end_example
 sets the corresponding event to repeat every week. See section "Timestamps" in the org manual for more details.
 
-For irregular repeating patterns, you can create several events with the same basic information by adding further timestamps and ranges to the description field of the capture template:
+For irregular repeating patterns, you can create several events with the same
+basic information by adding further timestamps and ranges to the description
+field of the capture template:
 #+begin_example
 ,* example event
 SCHEDULED: <2021-11-21 sön 13:27>--<2021-11-21 sön 19:22>
@@ -264,7 +267,39 @@ repeats:
 - <2021-11-23 tis 19:00>--<2021-11-23 tis 21:21>
 #+end_example
 
-For each of the timestamps in the bottom, additional events (with unique IDs) will be created through the ics export. Please not that using actual (sub) headings would create events with different descriptions. Also, the "SCHEDULED" for the main event is expected to be always present, even when further events are added as part of the description.
+For each of the timestamps in the bottom, additional events (with unique IDs)
+will be created through the ics export. Please not that the =SCHEDULED=
+for the main event is expected to be always present, even when further events
+are added as part of the description.
+
+However, with the above approach, each event will carry the repeated time stamps
+as part of their description, potentially leading to repeated entries in the Org
+agenda view. A cleaner though more verbose approach is using sub-headings:
+
+#+begin_example
+,* lecture 1 in example course
+SCHEDULED: <2021-11-22 Mon 08:15>--<2021-11-22 Mon 10:00>
+:PROPERTIES:
+:CREATED: [2021-11-21 sön 13:27]
+:CALENDAR: teaching
+:CATEGORY: event
+:LOCATION: lecture hall A
+:APPT_WARNTIME: 10
+:ID:       99c11a2c-bdbd-4625-81b8-4d61729ce64f
+:END:
+,** lecture 2 in example course
+SCHEDULED: <2021-11-23 Tue 08:15>--<2021-11-23 Tue 10:00>
+,** lecture 3 in example course
+SCHEDULED: <2021-11-24 Wed 10:15>--<2021-11-24 Wed 12:00>
+:PROPERTIES:
+:LOCATION: lecture hall D
+:END:
+#+end_example
+
+Note that all sub-headings need an individual =SCHEDULED= entry but inherit the
+properties of the top entry in the tree (here, for example, the =LOCATION= for
+"lecture 2") if not overwritten explicitly. In the export, each sub-tree will be
+created as separate calendar event and can even have its own repeat pattern.
 ** Default calendar
 If you are usually only importing into a single calendar, then you can define this as a default calendar:
 #+begin_src emacs-lisp
