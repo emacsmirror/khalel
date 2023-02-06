@@ -316,6 +316,11 @@ Return t on success and nil otherwise."
         ((org-icalendar-store-UID 't)
          ;; create events from non-TODO entries with scheduled time
          (org-icalendar-use-scheduled '(event-if-not-todo))
+         ;; work around a bug in org-element-cache-map in some Org mode versions
+         ;; by disabling cache; for details see
+         ;; https://orgmode.org/list/87pmau4fi3.fsf@hoowl.se
+         (org-element-use-cache (and (version<= "9.6.1" (org-version))
+                                     (bound-and-true-p org-element-use-cache)))
          (capturefn (buffer-file-name
                  (buffer-base-buffer)))
          (path (file-name-directory capturefn))
