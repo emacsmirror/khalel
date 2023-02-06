@@ -508,17 +508,19 @@ To be added as hook to `org-capture-before-finalize-hook'."
     (when (and
            (not org-note-abort)
            (equal key khalel-capture-key))
-      (if
-          (not (khalel-export-org-subtree-to-calendar))
-          ;; export finished with non-zero exit status,
-          ;; do not clean up buffer/wconf to leave error msg intact and visible
-          (progn
-            (org-capture-put :new-buffer nil)
-            (org-capture-put :kill-buffer nil)
-            (org-capture-put :return-to-wconf (current-window-configuration)))
-        (when
-            khalel-import-events-after-capture
-          (khalel-import-events))))))
+      (save-excursion
+        (goto-char (point-min))
+        (if
+            (not (khalel-export-org-subtree-to-calendar))
+            ;; export finished with non-zero exit status,
+            ;; do not clean up buffer/wconf to leave error msg intact and visible
+            (progn
+              (org-capture-put :new-buffer nil)
+              (org-capture-put :kill-buffer nil)
+              (org-capture-put :return-to-wconf (current-window-configuration)))
+          (when
+              khalel-import-events-after-capture
+            (khalel-import-events)))))))
 
 (defun khalel--sanitize-ics (ics)
   "Remove some modifications to data fields in ICS file.
