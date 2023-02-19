@@ -172,18 +172,16 @@ Alternatively, you can download the source code from [[https://gitlab.com/hperre
 
 To load the package, I recommend [[https://github.com/jwiegley/use-package][use-package]].
 *** Doom Emacs
-If you are using [[Https://github.com/hlissner/doom-emacs/][Doom Emacs]], you can install and load =khalel= by adding
+If you are using [[https://github.com/doomemacs/doomemacs][Doom Emacs]], you can install and load =khalel= by adding
 #+begin_src emacs-lisp
 (package! khalel)
 #+end_src
 to your =packages.el= and
 #+begin_src emacs-lisp
 (use-package! khalel
-  :commands (khalel-export-org-subtree-to-calendar
-             khalel-import-events
-             khalel-edit-calender-event
-             khalel-add-capture-template
-             ))
+  :after org
+  :config
+  (khalel-add-capture-template))
 #+end_src
 to your =config.el=. Then execute =./doom sync= in the =~/.emacs.d/bin/=
 directory to trigger the download of the package.
