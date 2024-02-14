@@ -139,7 +139,7 @@ Otherwise, ask for confirmation."
   "The format string to pass to khal when importing events.
 
 See the documentation to khal for valid placeholders (in curly
-brackets). The result should be properly formated 'org-mode'
+brackets). The result should be properly formated \\='org-mode\\='
 syntax."
   :group 'khalel-advanced
   :type  'string)
@@ -199,7 +199,7 @@ respectively" "0.1.8")
 (defvar khalel--khal-calendar-list nil
   "List of `khal' calendars known to khalel.\
 
-Caches output of 'khal printcalendars' and updated via
+Caches output of \\='khal printcalendars\\=' and updated via
 `khalel-refresh-khal-calendar-list'.")
 
 ;;;; Commands
@@ -461,11 +461,11 @@ Works on imported events and used their ID to search for the
                  (buffer-string)))))
 
 (defun khalel--get-calendar()
-  "Return a 'khal' calendar.
+  "Return a \\='khal\\=' calendar.
 
 This is either the default calendar set via
 `khalel-default-calendar' or one of the ones available through
-'khal'."
+\\='khal\\='."
   ;; refresh cached list if needed
   (unless khalel--khal-calendar-list
     (khalel-refresh-khal-calendar-list))
@@ -557,7 +557,7 @@ Return a plist with details of problems or nil if no issues were found."
                :output result))))
 
 (defun khalel--get-buffer-content-list ()
-  "Return the entire content of each subtree of the current buffer asa list."
+  "Return the entire content of each subtree of the current buffer as a list."
   (let ((content-list '()) ; start with empty list
         (tab-width 8)) ; required for Org mode files
     (org-element-map (org-element-parse-buffer) 'headline
