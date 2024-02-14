@@ -558,7 +558,8 @@ Return a plist with details of problems or nil if no issues were found."
 
 (defun khalel--get-buffer-content-list ()
   "Return the entire content of each subtree of the current buffer asa list."
-  (let ((content-list '())) ; start with empty list
+  (let ((content-list '()) ; start with empty list
+        (tab-width 8)) ; required for Org mode files
     (org-element-map (org-element-parse-buffer) 'headline
       (lambda (x)
         (let* ((begin (org-element-property :begin x))
