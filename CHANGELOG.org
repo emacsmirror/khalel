@@ -3,8 +3,9 @@
 Below are the summarized changes made in each version:
 
 * v0.1.11
-- fixes error "Tab width in Org files must be 8, not X" if =tab-width= is set to
+- Fixes error "Tab width in Org files must be 8, not X" if =tab-width= is set to
   anything but a value of =8=.
+- Fixes parsing of calendar names with space inside (e.g. "My Calendar").
 * v0.1.10
 - Introduces work-around for bug in =org-element-cache-map= when capturing
   multiple events via sub-trees.

@@ -435,7 +435,11 @@ Works on imported events and used their ID to search for the
                ,@(when khalel-khal-config `("-c" ,khalel-khal-config))
                "printcalendars"))
       (setq khalel--khal-calendar-list
-            (split-string (buffer-substring (point-min) (point-max))))))
+            (split-string
+             (buffer-substring (point-min) (point-max))
+             "[\f\t\n\r\v]+"
+             't
+             "[ ]+"))))
   khalel--khal-calendar-list)
 
 ;;;; Functions
