@@ -2,6 +2,8 @@
 
 Below are the summarized changes made in each version:
 
+* v0.1.12
+
 * v0.1.11
 - Fixes error "Tab width in Org files must be 8, not X" if =tab-width= is set to
   anything but a value of =8=.
