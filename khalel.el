@@ -259,6 +259,8 @@ alarms or settings for repeating events."
         (goto-char (point-max))
         (insert-file-contents errfn))
       (with-current-buffer dst
+          ;; Make sure org functions work correctly
+          (org-mode)
           ;; cosmetic fix for all-day events w/o start or end times:
           ;; remove spaces after dates
           (goto-char (point-min))
