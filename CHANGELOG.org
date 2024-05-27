@@ -3,7 +3,9 @@
 Below are the summarized changes made in each version:
 
 * v0.1.12
-
+- fixes =(wrong-type-argument integer-or-marker-p nil)= error during
+  =(khalel-import-events)= on Org mode versions 9.7 and later. Thanks to
+  Stanislav Ochotnický for the merge request.
 * v0.1.11
 - Fixes error "Tab width in Org files must be 8, not X" if =tab-width= is set to
   anything but a value of =8=.
