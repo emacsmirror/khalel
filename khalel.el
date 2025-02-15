@@ -187,7 +187,9 @@ When set to nil then it will be guessed."
 
 (defcustom khalel-import-events-after-capture 't
   "Whether to automatically update the imported events after a new capture."
-  :group 'khalel
+  :group 'khalel-advanced
+  :type 'boolean)
+
 (defcustom khalel-import-events-after-vdirsyncer 't
   "Whether to automatically update the imported events after synchronization."
   :group 'khalel-advanced
