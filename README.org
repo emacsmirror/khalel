@@ -320,6 +320,11 @@ If you have several calendars that you would like to import into separate =org= 
 This limits the import to a single calendar =work= and stores it in the file
 =work-events.org=. Consider to also modify =khalel-import-org-file-header= and
 =khalel-import-format= to make them reflect your customization.
+
+In this configuration, you might want to disable the automatic import when
+performing a capture, synchronization or edit, by disabling
+=khalel-import-events-after-capture=, =khalel-import-events-after-vdirsyncer=
+and =khalel-import-events-after-khal-edit=, respectively.
 ** Customizing the =org= file that events are imported into
 If you want to customize the khalel template, e.g. if you want the scheduled date to be a property, you can do this the following way:
 

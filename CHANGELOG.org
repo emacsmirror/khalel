@@ -3,6 +3,13 @@
 Below are the summarized changes made in each version:
 
 * v0.1.13
+- added feature: automatic import of events after running =vdirsyncer= or
+  performing an edit via =khal edit= is now possible and on by default. If you
+  prefer the previous behavior, customize the variables
+  ~khalel-import-events-after-vdirsyncer~ and
+  ~khalel-import-events-after-khal-edit~ in the advanced customization group.
+- the variable ~khalel-import-events-after-capture~ is now located in the
+  "advanced" customization group.
 
 * v0.1.12
 - fixes =(wrong-type-argument integer-or-marker-p nil)= error during
