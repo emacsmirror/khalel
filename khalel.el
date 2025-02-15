@@ -615,6 +615,47 @@ the current import date range."
         (sit-for 2)
         (delete-window (get-buffer-window buf))
         (kill-buffer buf)))))
+(defun khalel--run-after-process (process event)
+  "Check status of PROCESS at each EVENT and run tasks after process finished.
+
+Ensures that process window is closed after successfully
+finishing and runs import of events (if so configured via
+`khalel-import-events-after-vdirsyncer' or
+`khalel-import-events-after-khal-edit' for calls to `vdirsyncer'
+and `khal edit', respectively).
+
+In case of errors, a message with details will be displayed and
+the process window will remain."
+  (let ((exitstat (process-exit-status process))
+        (buf (process-buffer process))
+        (cmd (car (process-command process))))
+    (if (= 0 exitstat)
+        ;; process has finished successfully
+        (progn
+          (message "Process '%s' finished successfully." cmd)
+          ;; close buffer
+          (when (get-buffer buf)
+            (with-current-buffer buf
+              (set-window-point
+               (get-buffer-window (current-buffer) 'visible)
+               (point-max)))
+            (sit-for 2)
+            (delete-window (get-buffer-window buf))
+            (kill-buffer buf))
+          ;; run import if so configured or this is an edit
+          (when
+              (or
+               (and khalel-import-events-after-vdirsyncer (string-match-p khalel-vdirsyncer-command cmd))
+               (and khalel-import-events-after-khal-edit (string-match-p khalel-khal-command cmd)))
+            (khalel-import-events)))
+      ;; otherwise, there was an issue
+      (progn
+        (message "Process '%s' (%s) failed: '%s' (exit status %d). See buffer '%s' for details."
+                 cmd
+                 (process-name process)
+                 (substring event 0 -1) ;; remove newline character
+                 exitstat
+                 (buffer-name buf))))))
 
 
 ;;;; Footer
