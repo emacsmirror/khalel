@@ -406,7 +406,7 @@ and immediately exported to khal."
           (or khalel-vdirsyncer-command
               (executable-find "vdirsyncer"))
           "sync")
-         #'khalel--delete-process-window-when-done)
+         #'khalel--run-after-process)
         ;; show output
         (sit-for 1)
         (with-current-buffer buf
@@ -429,7 +429,7 @@ Works on imported events and used their ID to search for the
                                 "khal-edit" nil
                                 khalel-khal-command nil
                                 "edit" "--show-past" uid))
-           #'khalel--delete-process-window-when-done)
+           #'khalel--run-after-process)
           (pop-to-buffer buf))
       (message "khalel: could not find ID associated with current entry."))))
 
@@ -603,18 +603,7 @@ the current import date range."
         (set-window-dedicated-p win t)
         win)))
 
-(defun khalel--delete-process-window-when-done (process _event)
-  "Check status of PROCESS at each EVENT and delete window after process finished."
-  (let ((buf (process-buffer process)))
-    (when (= 0 (process-exit-status process))
-      (when (get-buffer buf)
-        (with-current-buffer buf
-          (set-window-point
-           (get-buffer-window (current-buffer) 'visible)
-           (point-max)))
-        (sit-for 2)
-        (delete-window (get-buffer-window buf))
-        (kill-buffer buf)))))
+
 (defun khalel--run-after-process (process event)
   "Check status of PROCESS at each EVENT and run tasks after process finished.
 
