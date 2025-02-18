@@ -649,6 +649,21 @@ the process window will remain."
                  (buffer-name buf))))))
 
 
+(defun khalel--scroll-on-insert-filter (proc string)
+  "Insert output STRING of PROC and scroll respective window unless selected."
+  (let* ((buf (process-buffer proc))
+         (window (get-buffer-window buf 'visible)))
+  (when (buffer-live-p buf)
+    (with-current-buffer buf
+      (let ((inhibit-read-only 't)) ;; temp buffer in help mode, ie. read-only
+        (save-excursion
+          (goto-char (point-max))
+          (insert string))
+        ;; scroll window if not currently selected
+        (when (and window (not (equal (selected-window) window)))
+          (set-window-point window (point-max))))))))
+
+
 ;;;; Footer
 (provide 'khalel)
 ;;; khalel.el ends here
