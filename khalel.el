@@ -621,14 +621,13 @@ the process window will remain."
         ;; process has finished successfully
         (progn
           (message "Process '%s' finished successfully." cmd)
-          ;; close buffer
+          ;; close buffer (and window as it is dedicated)
           (when (get-buffer buf)
             (with-current-buffer buf
               (set-window-point
                (get-buffer-window (current-buffer) 'visible)
                (point-max)))
             (sit-for 2)
-            (delete-window (get-buffer-window buf))
             (kill-buffer buf))
           ;; run import if so configured or this is an edit
           (when
