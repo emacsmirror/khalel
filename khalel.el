@@ -591,6 +591,7 @@ the current import date range."
   (insert (format "*Events scheduled between %s and %s*:\n" sdate edate))
   (insert (format "/(Last import: %s)/\n\n" (current-time-string))))
 
+
 (defun khalel--make-temp-window (buf height)
   "Create a temporary window with HEIGHT at the frame bottom displaying buffer BUF."
   (or (get-buffer-window buf 'visible)
