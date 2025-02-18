@@ -10,6 +10,8 @@ Below are the summarized changes made in each version:
   ~khalel-import-events-after-khal-edit~ in the advanced customization group.
 - the variable ~khalel-import-events-after-capture~ is now located in the
   "advanced" customization group.
+- output of =khalel-run-vdirsyncer= now scrolls automatically as long as the
+  window showing the output buffer is not selected.
 
 * v0.1.12
 - fixes =(wrong-type-argument integer-or-marker-p nil)= error during
