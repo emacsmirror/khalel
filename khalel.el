@@ -398,23 +398,20 @@ and immediately exported to khal."
 (defun khalel-run-vdirsyncer ()
   "Run vdirsyncer process to synchronize local calendar entries."
   (interactive)
-  (let ((buf "*VDIRSYNCER-OUTPUT-BUFFER*"))
+  (let ((buf "*VDIRSYNCER-OUTPUT-BUFFER*")
+        (vdirsyncer (or khalel-vdirsyncer-command
+                        (executable-find "vdirsyncer"))))
     (with-output-to-temp-buffer buf
-        (khalel--make-temp-window buf 16)
-        (set-process-sentinel
-         (start-process
-          "khalel-vdirsyncer-process"
-          buf
-          (or khalel-vdirsyncer-command
-              (executable-find "vdirsyncer"))
-          "sync")
-         #'khalel--run-after-process)
-        ;; show output
-        (sit-for 1)
-        (with-current-buffer buf
-          (set-window-point
-           (get-buffer-window (current-buffer) 'visible)
-           (point-min))))))
+      (khalel--make-temp-window buf 16)
+      (with-current-buffer buf
+        (insert "Running " vdirsyncer "..\n\n"))
+      (make-process
+       :name "khalel-vdirsyncer-process"
+       :buffer buf
+       :command `(,vdirsyncer "sync")
+       :filter #'khalel--scroll-on-insert-filter
+       :sentinel #'khalel--run-after-process))))
+
 
 (defun khalel-edit-calendar-event ()
   "Edit the event at the cursor position using khal's interactive edit command.
