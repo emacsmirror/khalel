@@ -182,6 +182,21 @@ When set to nil then it will be guessed."
   :group 'khalel
   :type 'string)
 
+(defcustom khalel-vdirsyncer-collections nil
+  "Collections or pairs to pass to vdirsyncer \\='sync\\=' command.
+
+This limits the synchronization to only those specified
+collections or pairs when running `khalel-run-vdirsyncer'.
+Multple collections must be separated by a space. Specify nil to
+synchronize all available collections and pairs.
+
+Examples:
+
+\\='bob frank\\=': synchronize pairs bob and frank
+\\='bob/first_collection\\=': synchronize collection first_collection from pair bob."
+  :group 'khalel-advanced
+  :type 'string)
+
 (define-obsolete-variable-alias 'khalel-update-upcoming-events-after-capture
   'khalel-import-events-after-capture "0.1.8")
 
@@ -408,7 +423,9 @@ and immediately exported to khal."
       (make-process
        :name "khalel-vdirsyncer-process"
        :buffer buf
-       :command `(,vdirsyncer "sync")
+       :command (remq nil `(,vdirsyncer
+                            "sync"
+                            ,khalel-vdirsyncer-collections))
        :filter #'khalel--scroll-on-insert-filter
        :sentinel #'khalel--run-after-process))))
 

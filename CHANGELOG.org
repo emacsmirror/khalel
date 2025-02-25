@@ -8,11 +8,13 @@ Below are the summarized changes made in each version:
   prefer the previous behavior, customize the variables
   ~khalel-import-events-after-vdirsyncer~ and
   ~khalel-import-events-after-khal-edit~ in the advanced customization group.
+- added feature: synchronization can be limited to specific =vdirsyncer= pairs
+  or collections by customizing the variable ~khalel-vdirsyncer-collections~.
+  Thanks to Detlef Steuer for the suggestion and initial patch.
 - the variable ~khalel-import-events-after-capture~ is now located in the
   "advanced" customization group.
 - output of =khalel-run-vdirsyncer= now scrolls automatically as long as the
   window showing the output buffer is not selected.
-
 * v0.1.12
 - fixes =(wrong-type-argument integer-or-marker-p nil)= error during
   =(khalel-import-events)= on Org mode versions 9.7 and later. Thanks to
