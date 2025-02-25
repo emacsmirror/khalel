@@ -2,6 +2,9 @@
 
 Below are the summarized changes made in each version:
 
+* v0.1.14
+-
+
 * v0.1.13
 - added feature: automatic import of events after running =vdirsyncer= or
   performing an edit via =khal edit= is now possible and on by default. If you
