@@ -29,7 +29,7 @@ limitations in its online documentation]] and the additional list of limitations
 below.
 
 Adjusting the output of =khal= slightly, one can quite easily get something that already resembles an
-org-mode file (link to the online documentation: [[https://khal.readthedocs.io/en/latest/usage.html][khal usuage]]):
+org-mode file (link to the online documentation: [[https://khal.readthedocs.io/en/latest/usage.html][khal usage]]):
 
 #+begin_src bash :results output
 khal list --format "* {title} \n <{start-date} {start-time}-{end-time}> \n {location} \n {description}" --day-format "" today 10d
