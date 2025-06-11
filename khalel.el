@@ -197,6 +197,19 @@ Examples:
   :group 'khalel-advanced
   :type 'string)
 
+(defcustom khalel-vdirsyncer-extra-options nil
+  "Options to pass to vdirsyncer.
+
+This allows to customize e.g. the verbosity level of vdirsyncer's output
+or to pass specific configurations.
+
+Examples:
+
+\\='--verbosity DEBUG\\=': enable debugging output.
+\\='--config FILE\\=': select a vdirsyncer configuration file to use."
+  :group 'khalel-advanced
+  :type 'string)
+
 (define-obsolete-variable-alias 'khalel-update-upcoming-events-after-capture
   'khalel-import-events-after-capture "0.1.8")
 
@@ -423,9 +436,13 @@ and immediately exported to khal."
       (make-process
        :name "khalel-vdirsyncer-process"
        :buffer buf
-       :command (remq nil `(,vdirsyncer
-                            "sync"
-                            ,khalel-vdirsyncer-collections))
+       :command (remq nil (flatten-list
+                           `(,vdirsyncer
+                             ,(when khalel-vdirsyncer-extra-options
+                                (split-string khalel-vdirsyncer-extra-options))
+                             "sync"
+                             ,(when khalel-vdirsyncer-collections
+                                (split-string khalel-vdirsyncer-collections)))))
        :filter #'khalel--scroll-on-insert-filter
        :sentinel #'khalel--run-after-process))))
 
