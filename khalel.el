@@ -5,8 +5,8 @@
 ;; Author: Hanno Perrey <http://gitlab.com/hperrey>
 ;; Maintainer: Hanno Perrey <hanno@hoowl.se>
 ;; Created: september 10, 2021
-;; Modified: may 27, 2024
-;; Version: 0.1.13
+;; Modified: feb 25, 2025
+;; Version: 0.1.14
 ;; Keywords: event, calendar, ics, khal
 ;; Homepage: https://gitlab.com/hperrey/khalel
 ;; Package-Requires: ((emacs "27.1"))
@@ -194,6 +194,19 @@ Examples:
 
 \\='bob frank\\=': synchronize pairs bob and frank
 \\='bob/first_collection\\=': synchronize collection first_collection from pair bob."
+  :group 'khalel-advanced
+  :type 'string)
+
+(defcustom khalel-vdirsyncer-extra-options nil
+  "Options to pass to vdirsyncer.
+
+This allows to customize e.g. the verbosity level of vdirsyncer's output
+or to pass specific configurations.
+
+Examples:
+
+\\='--verbosity DEBUG\\=': enable debugging output.
+\\='--config FILE\\=': select a vdirsyncer configuration file to use."
   :group 'khalel-advanced
   :type 'string)
 
@@ -423,9 +436,13 @@ and immediately exported to khal."
       (make-process
        :name "khalel-vdirsyncer-process"
        :buffer buf
-       :command (remq nil `(,vdirsyncer
-                            "sync"
-                            ,khalel-vdirsyncer-collections))
+       :command (remq nil (flatten-list
+                           `(,vdirsyncer
+                             ,(when khalel-vdirsyncer-extra-options
+                                (split-string khalel-vdirsyncer-extra-options))
+                             "sync"
+                             ,(when khalel-vdirsyncer-collections
+                                (split-string khalel-vdirsyncer-collections)))))
        :filter #'khalel--scroll-on-insert-filter
        :sentinel #'khalel--run-after-process))))
 
