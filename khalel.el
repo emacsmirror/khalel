@@ -218,6 +218,11 @@ Examples:
   :group 'khalel-advanced
   :type 'boolean)
 
+(defcustom khalel-run-vdirsyncer-after-capture nil
+  "Whether to automatically run vdirsyncer after a new capture."
+  :group 'khalel-advanced
+  :type 'boolean)
+
 (defcustom khalel-import-events-after-vdirsyncer 't
   "Whether to automatically update the imported events after synchronization."
   :group 'khalel-advanced
@@ -567,7 +572,10 @@ To be added as hook to `org-capture-before-finalize-hook'."
               (org-capture-put :return-to-wconf (current-window-configuration)))
           (when
               khalel-import-events-after-capture
-            (khalel-import-events)))))))
+            (khalel-import-events))
+          (when
+              khalel-run-vdirsyncer-after-capture
+            (khalel-run-vdirsyncer)))))))
 
 (defun khalel--sanitize-ics (ics)
   "Remove some modifications to data fields in ICS file.
