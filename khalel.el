@@ -5,8 +5,8 @@
 ;; Author: Hanno Perrey <http://gitlab.com/hperrey>
 ;; Maintainer: Hanno Perrey <hanno@hoowl.se>
 ;; Created: september 10, 2021
-;; Modified: feb 25, 2025
-;; Version: 0.1.14
+;; Modified: june 12, 2025
+;; Version: 0.1.15
 ;; Keywords: event, calendar, ics, khal
 ;; Homepage: https://gitlab.com/hperrey/khalel
 ;; Package-Requires: ((emacs "27.1"))
@@ -215,6 +215,11 @@ Examples:
 
 (defcustom khalel-import-events-after-capture 't
   "Whether to automatically update the imported events after a new capture."
+  :group 'khalel-advanced
+  :type 'boolean)
+
+(defcustom khalel-run-vdirsyncer-after-capture nil
+  "Whether to automatically run vdirsyncer after a new capture."
   :group 'khalel-advanced
   :type 'boolean)
 
@@ -567,7 +572,10 @@ To be added as hook to `org-capture-before-finalize-hook'."
               (org-capture-put :return-to-wconf (current-window-configuration)))
           (when
               khalel-import-events-after-capture
-            (khalel-import-events)))))))
+            (khalel-import-events))
+          (when
+              khalel-run-vdirsyncer-after-capture
+            (khalel-run-vdirsyncer)))))))
 
 (defun khalel--sanitize-ics (ics)
   "Remove some modifications to data fields in ICS file.
